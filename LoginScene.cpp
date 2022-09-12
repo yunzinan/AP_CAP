@@ -6,6 +6,7 @@
 #include <iomanip>
 #include "LoginScene.h"
 #include "AccountCenter.h"
+#include "SellerCenter.h"
 
 LoginScene::LoginScene() {
     this->loadUserInfo();
@@ -16,7 +17,7 @@ LoginScene::~LoginScene() {
     // 写文件
     std::fstream fout;
     fout.open("../res/userInfo.txt", std::ios::out | std::ios::trunc);//覆盖写入
-    // 释放内存
+    // 释放内存, 写入文件
     fout << "userID,username,password,phoneNumber,address,balance,userState" << std::endl;
     for(int i = 0; i < this->idx; i++) {
         if(userInfoList[i] != nullptr) {
@@ -213,6 +214,7 @@ void LoginScene::selectUserOpt() {//1. 我是卖家 2. 我是买家 3. 个人中
     int ans;
     bool isValid = false;
     AccountCenter a;
+    SellerCenter s(this->curUser);
     a.init(this, this->curUser);
     while(!isValid) {
         printf("------------------------------------------------------------\n");
@@ -227,10 +229,11 @@ void LoginScene::selectUserOpt() {//1. 我是卖家 2. 我是买家 3. 个人中
             case 1:
                 printf("going to the Seller Center...\n");
                 //调用卖家模块
+                s.selectOpt();
                 break;
             case 2:
                 printf("going to the Buyer Center...\n");
-                //调用卖家模块
+                //调用买家模块
                 break;
             case 3:
                 printf("going to the Account Center...\n");

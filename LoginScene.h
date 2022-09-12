@@ -39,7 +39,7 @@ public:
     std::string userRegisterCheck(const std::string& username); //检查用户名是否重复
     void adminLogin();
     void selectUserOpt(); // 用户中心选择显示和接收
-    userInfo* createUser(std::string &buffer); //接收完整的一行信息并创建一个用户结构体, 返回其地址(1. 初始化时读取 2. 创建新用户时读取)
+    userInfo* createUser(std::string &buffer); //接收完整的一行信息并创建一个用户结构体, 返回其地址(初始化时读取)
     ~LoginScene();
 };
 
