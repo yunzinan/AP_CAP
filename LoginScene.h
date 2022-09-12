@@ -27,16 +27,19 @@ class LoginScene
 {
 private:
     userInfo *userInfoList[USERCAPACITY];// 预设用户量上限为20
-    int idx = 0;
+    userInfo *curUser;//记录当前登录的用户指针
+    int idx = 0; //记录当前存在的用户数量, 数组记得要减1!
 public:
     LoginScene();
     void loadUserInfo(); //在初始化的时候从文件中读取信息或创建新文件
     void selectOpt(); // 显示选择选项, 并接受回答, 从而调用其他函数或类
     void userLogin();
-    void userRegister();
+    bool userLoginCheck(std::string username, std::string password);
+    void userRegister(); //需要输入完整的信息
+    std::string userRegisterCheck(std::string username); //检查用户名是否重复
     void adminLogin();
     void selectUserOpt(); // 用户中心选择显示和接收
-    userInfo* createUser(std::string &buffer); //接收完整的一行信息并创建一个用户结构体, 返回其地址
+    userInfo* createUser(std::string &buffer); //接收完整的一行信息并创建一个用户结构体, 返回其地址(1. 初始化时读取 2. 创建新用户时读取)
     ~LoginScene();
 };
 
