@@ -3,4 +3,4 @@ project(CAP)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(CAP main.cpp LoginScene.cpp LoginScene.h)
+add_executable(CAP main.cpp LoginScene.cpp LoginScene.h AccountCenter.cpp AccountCenter.h)

@@ -5,7 +5,7 @@
 #include <fstream>
 #include <iomanip>
 #include "LoginScene.h"
-#include "LoginScene.h"
+#include "AccountCenter.h"
 
 LoginScene::LoginScene() {
     this->loadUserInfo();
@@ -19,7 +19,7 @@ LoginScene::~LoginScene() {
     // 释放内存
     fout << "userID,username,password,phoneNumber,address,balance,userState" << std::endl;
     for(int i = 0; i < this->idx; i++) {
-        if(userInfoList[i] != NULL) {
+        if(userInfoList[i] != nullptr) {
             fout << userInfoList[i]->userID << ",";
             fout << userInfoList[i]->username << ",";
             fout << userInfoList[i]->password << ",";
@@ -50,7 +50,7 @@ void LoginScene::loadUserInfo() {
     while(!fin.eof()) { //读取
         buffer.clear();
         fin >>  buffer;
-        if(buffer == ""){
+        if(buffer.empty()){
             //说明是因为换行符导致进入到这一行
             break;
         }
@@ -111,7 +111,8 @@ void LoginScene::userLogin() {
         printf("password: ");
         std::string passwordBuffer;
         std::cin >> passwordBuffer;
-        if(this->userLoginCheck(usernameBuffer, passwordBuffer)) {
+        this->curUser = this->userLoginCheck(usernameBuffer, passwordBuffer);
+        if(this->curUser != nullptr) {
             printf("success!\n");
             isValid = true;
         }
@@ -149,7 +150,7 @@ void LoginScene::userRegister() {
         printf("address: ");
         std::cin >> _address;
         std::string _userID = this->userRegisterCheck(_username);
-        if(_userID != "") {
+        if(!_userID.empty()) {
             isValid = true;
             userInfo *cur = new userInfo;
             cur->username = _username;
@@ -211,10 +212,14 @@ void LoginScene::selectUserOpt() {//1. 我是卖家 2. 我是买家 3. 个人中
     //    system("cls");
     int ans;
     bool isValid = false;
+    AccountCenter a;
+    a.init(this, this->curUser);
     while(!isValid) {
         printf("------------------------------------------------------------\n");
-        printf("**************************Admin Login***********************\n");
+        printf("****************************User Menu***********************\n");
         printf("------------------------------------------------------------\n");
+        printf("Welcome, ");
+        std::cout << this->curUser->username << std::endl;
         printf("1. Seller Center 2. Buyer Center 3. Account Center 4. exit\n");
         printf("select a num: ");
         scanf("%d", &ans);
@@ -229,9 +234,11 @@ void LoginScene::selectUserOpt() {//1. 我是卖家 2. 我是买家 3. 个人中
                 break;
             case 3:
                 printf("going to the Account Center...\n");
+                a.selectOpt();
                 //调用个人中心模块
                 break;
-            case 4:
+            case 4://return
+                this->curUser = nullptr;// 清空当前用户指针
                 isValid = true;
                 break;
             default:
@@ -242,9 +249,9 @@ void LoginScene::selectUserOpt() {//1. 我是卖家 2. 我是买家 3. 个人中
 }
 
 userInfo* LoginScene::createUser(std::string &buffer) {
-    if(buffer == "") {
+    if(buffer.empty()) {
         printf("error! no input!\n");
-        return NULL;
+        return nullptr;
     }
     //create a new userInfo struct
     userInfo * cur = new userInfo;
@@ -279,16 +286,16 @@ userInfo* LoginScene::createUser(std::string &buffer) {
     return cur;
 }
 
-bool LoginScene::userLoginCheck(std::string username, std::string password) {
+userInfo* LoginScene::userLoginCheck(const std::string& username, const std::string& password) {
     for(int i = 0; i < this->idx; i++) {
         if(username == this->userInfoList[i]->username && password == this->userInfoList[i]->password) {
-            return true;
+            return this->userInfoList[i];
         }
     }
-    return false;
+    return nullptr;
 }
 
-std::string LoginScene::userRegisterCheck(std::string username) {
+std::string LoginScene::userRegisterCheck(const std::string& username) {
     std::string ret;
     for(int i = 0; i < this->idx; i++) {
         if(username == this->userInfoList[i]->username) {

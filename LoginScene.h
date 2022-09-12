@@ -17,8 +17,8 @@ typedef struct userInfo
         std::string username; // no more than 10
         std::string password; // no more than 20
         std::string phonenumber; // no more than 40, numbers only
-        std::string address; // nomore than 40,
-        float balance; // setprecision 1
+        std::string address; // no more than 40,
+        float balance; // set precision 1
         std::string userState; // activate, inactivate
 }userInfo;
 
@@ -34,9 +34,9 @@ public:
     void loadUserInfo(); //在初始化的时候从文件中读取信息或创建新文件
     void selectOpt(); // 显示选择选项, 并接受回答, 从而调用其他函数或类
     void userLogin();
-    bool userLoginCheck(std::string username, std::string password);
+    userInfo* userLoginCheck(const std::string& username, const std::string& password);
     void userRegister(); //需要输入完整的信息
-    std::string userRegisterCheck(std::string username); //检查用户名是否重复
+    std::string userRegisterCheck(const std::string& username); //检查用户名是否重复
     void adminLogin();
     void selectUserOpt(); // 用户中心选择显示和接收
     userInfo* createUser(std::string &buffer); //接收完整的一行信息并创建一个用户结构体, 返回其地址(1. 初始化时读取 2. 创建新用户时读取)
