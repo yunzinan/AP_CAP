@@ -2,7 +2,9 @@
 // Created by Jack_shen on 2022/9/12.
 //
 
+#include <iomanip>
 #include "SellerCenter.h"
+
 
 SellerCenter::SellerCenter(userInfo *_curUser) {
     //获取当前时间
@@ -27,7 +29,7 @@ void SellerCenter::selectOpt() {
     while(!isValid) {
         //        system("cls");
         printf("------------------------------------------------------------\n");
-        printf("*****************************LOGIN**************************\n");
+        printf("**************************Seller Center*********************\n");
         printf("------------------------------------------------------------\n");
         printf("1. Release Commodity 2. View Commodity List\n"
                " 3. Modify Commodity 4. Cancel Commodity 5. View Order List 6. Exit\n");
@@ -41,13 +43,13 @@ void SellerCenter::selectOpt() {
                 this->viewCommodityList();
                 break;
             case 3:
-//                this->modifyCommodityInfo();
+                this->modifyCommodityInfo();
                 break;
             case 4:
-//                this->cancelCommodity();
+                this->cancelCommodity();
                 break;
             case 5:
-                this->viewCommodityList();
+//                this->viewOrderList();
                 break;
             case 6: // exit
                 isValid = true;
@@ -156,4 +158,99 @@ std::string SellerCenter::generateDate() {
 
 void SellerCenter::viewCommodityList() {
     this->auctionSystem->showCommodityList(this->curUser->userID);
+}
+
+void SellerCenter::modifyCommodityInfo() {
+    printf("type in the commodityID you want to modify: ");
+    std::string _commodityID;
+    std::cin >> _commodityID;
+    //find
+    commodityInfo * response = this->auctionSystem->findCommodity(_commodityID, this->curUser->userID);
+    if(response == nullptr) {
+        printf("failed! commodity not find!\n");
+        return ;
+    }
+    printf("************************************************************\n");
+    std::cout << "commodityID: " << response->commodityID << std::endl
+            << "commodityName: " << response->commodityName << std::endl
+            << "floorPrice: " << std::setiosflags(std::ios::fixed) << std::setprecision(1) << response->floorPrice << std::endl
+            << "number: " << response->number << std::endl
+            << "description: " << response->description << std::endl;
+    printf("************************************************************\n");
+    printf("1. commodityName 2. floorPrice 3. number 4. description\n");
+    printf("select a number of the property you want to modify: ");
+    int ans;
+    scanf("%d", &ans);
+    std::string _commodityName, _description;
+    float _floorPrice;
+    int _number;
+    switch (ans) {
+        case 1:
+            printf("new commodityName: ");
+            std::cin >> _commodityName;
+            response->commodityName = _commodityName;
+            std::cout << "now commodityName: " << response->commodityName << std::endl;
+            break;
+        case 2:
+            printf("new floorPrice: ");
+            std::cin >> _floorPrice;
+            response->floorPrice = _floorPrice;
+            std::cout << "now floorPrice: " << std::setiosflags(std::ios::fixed) << std::setprecision(1) << response->floorPrice << std::endl;
+            break;
+        case 3:
+            printf("new number: ");
+            scanf("%d", &_number);
+            response->number = _number;
+            std::cout << "now number: " << response->number << std::endl;
+            break;
+        case 4:
+            printf("new description: ");
+            std::cin >> _description;
+            response->description = _description;
+            std::cout << "now description: " << response->description << std::endl;
+            break;
+        default:
+            printf("failed! wrong input!\n");
+            break;
+    }
+}
+
+void SellerCenter::cancelCommodity() {
+    printf("type in the commodityID you want to cancel: ");
+    std::string _commodityID;
+    std::cin >> _commodityID;
+    //find
+    commodityInfo *response = this->auctionSystem->findCommodity(_commodityID);
+    if(response == nullptr) {
+        printf("failed! commodity not find!\n");
+        return ;
+    }
+    printf("************************************************************\n");
+    std::cout << "commodityID: " << response->commodityID << std::endl
+              << "commodityName: " << response->commodityName << std::endl
+              << "floorPrice: " << response->floorPrice << std::endl
+              << "number: " << response->number << std::endl
+              << "description: " << response->description << std::endl;
+    printf("************************************************************\n");
+    printf("1. cancelCommodity 2. re-releaseCommodity\n");
+    printf("select a number: ");
+    int ans;
+    scanf("%d", &ans);
+    if(ans == 1) {
+        if(response->state == "onAuction") {
+            response->state = "removed";
+            printf("success!\n");
+        }
+        else printf("failed! already removed!\n");
+    }
+    else if(ans == 2) {
+        if(response->state == "removed") {
+            response->state = "onAuction";
+            printf("success!\n");
+        }
+        else printf("failed! already onAuction!\n");
+    }
+    else {
+        printf("failed! wrong input!\n");
+    }
 }

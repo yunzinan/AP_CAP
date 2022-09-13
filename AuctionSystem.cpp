@@ -59,6 +59,7 @@ commodityInfo *AuctionSystem::createCommodity(std::string &buffer) {
     //commodityName
     while(buffer[++r] != ',') {}
     cur->commodityName = buffer.substr(l, r-l);
+    l = r+1;
     //floorPrice
     while(buffer[++r] != ',') {}
     cur->floorPrice = atof(buffer.substr(l, r-l).c_str());
@@ -92,7 +93,7 @@ AuctionSystem::~AuctionSystem() {
     fout << "commodityID,commodityName,floorPrice,number,description,sellerID,addedDate,state" << std::endl;
     for(int i = 0; i < this->commodityIdx; i++) {
         if(commodityInfoList[i] != nullptr) {
-            fout << commodityInfoList[i]->commodityName << ",";
+            fout << commodityInfoList[i]->commodityID << ",";
             fout << commodityInfoList[i]->commodityName << ",";
             fout << std::setiosflags(std::ios::fixed) << std::setprecision(1) << commodityInfoList[i]->floorPrice << ",";
             fout << commodityInfoList[i]->number << ",";
@@ -135,10 +136,47 @@ void AuctionSystem::showCommodityList(std::string _sellerID) {
         if(this->commodityInfoList[i]->sellerID == _sellerID) {
             std::cout << this->commodityInfoList[i]->commodityID << " "
                     << this->commodityInfoList[i]->commodityName << " "
-                    << this->commodityInfoList[i]->floorPrice << " "
+                    << std::setiosflags(std::ios::fixed) << std::setprecision(1) << this->commodityInfoList[i]->floorPrice << " "
                     << this->commodityInfoList[i]->number << " "
                     << this->commodityInfoList[i]->addedDate << " "
                     << this->commodityInfoList[i]->state << std::endl;
         }
     }
 }
+
+void AuctionSystem::showCommodityList() {
+    printf("------------------------------------------------------------\n");
+    printf("***********************Commodity List***********************\n");
+    printf("------------------------------------------------------------\n");
+    printf("ID Name FloorPrice Number AddedDate State\n");
+    for(int i = 0; i < this->commodityIdx; i++) {
+        if(this->commodityInfoList[i]->state == "onAuction") {
+            std::cout << this->commodityInfoList[i]->commodityID << " "
+                      << this->commodityInfoList[i]->commodityName << " "
+                      << std::setiosflags(std::ios::fixed) << std::setprecision(1) << this->commodityInfoList[i]->floorPrice << " "
+                      << this->commodityInfoList[i]->number << " "
+                      << this->commodityInfoList[i]->addedDate << " "
+                      << this->commodityInfoList[i]->state << std::endl;
+        }
+    }
+}
+
+commodityInfo *AuctionSystem::findCommodity(std::string _commodityID) {
+    for(int i = 0; i < this->commodityIdx; i++) {
+        if(this->commodityInfoList[i]->commodityID == _commodityID) {
+            return this->commodityInfoList[i];
+        }
+    }
+    return nullptr;
+}
+
+commodityInfo *AuctionSystem::findCommodity(std::string _commodityID, std::string _sellerID) {
+    for(int i = 0; i < this->commodityIdx; i++) {
+        if(this->commodityInfoList[i]->commodityID == _commodityID && this->commodityInfoList[i]->sellerID == _sellerID) {
+            return this->commodityInfoList[i];
+        }
+    }
+    return nullptr;
+}
+
+

@@ -29,9 +29,9 @@ public:
     void selectOpt();
     void releaseCommodity();
     void viewCommodityList(); // 查看 该用户 发布的商品
-//    void modifyCommodityInfo();
-//    void cancelCommodity();
-    void viewOrderList();
+    void modifyCommodityInfo(); // 先查找, 然后修改, 并且商品属于自己
+    void cancelCommodity(); // 先查找是否存在这个商品 并且商品属于自己 然后修改属性为下架
+    void viewOrderList(); // 订单系统还未实现
     std::string generateTime();
     std::string generateDate();
     ~SellerCenter();

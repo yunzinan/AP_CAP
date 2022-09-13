@@ -1,3 +1,6 @@
 userID,username,password,phoneNumber,address,balance,userState
 U001,test,123,123,NJU_CS,100.0,active
 U002,alice,123,123,123,0.0,active
+U003,bob,123,123123,123123123,0.0,active
+U004,bobo,123,123123,1231233123,0.0,active
+U005,cat,123,123123,123123123,0.0,active
