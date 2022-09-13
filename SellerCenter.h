@@ -10,15 +10,6 @@
 #include "LoginScene.h"
 #include "AuctionSystem.h"
 
-typedef struct myTimer{
-    int year;
-    int month;
-    int day;
-    int hour;
-    int min;
-    int sec;
-}myTimer;
-
 class SellerCenter {
     userInfo *curUser;
     AuctionSystem *auctionSystem;
@@ -31,7 +22,7 @@ public:
     void viewCommodityList(); // 查看 该用户 发布的商品
     void modifyCommodityInfo(); // 先查找, 然后修改, 并且商品属于自己
     void cancelCommodity(); // 先查找是否存在这个商品 并且商品属于自己 然后修改属性为下架
-    void viewOrderList(); // 订单系统还未实现
+    void viewOrderList(); //查看该用户出售的商品的订单
     std::string generateTime();
     std::string generateDate();
     ~SellerCenter();

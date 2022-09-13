@@ -13,7 +13,7 @@ BuyerCenter::BuyerCenter(userInfo *_curUser, AuctionSystem *_system) {
 }
 
 BuyerCenter::~BuyerCenter() {
-    delete this->auctionSystem;
+//    delete this->auctionSystem;
 }
 
 void BuyerCenter::selectOpt() {
@@ -40,10 +40,10 @@ void BuyerCenter::selectOpt() {
                 this->viewDetailedCommodity();
                 break;
             case 4:
-//                this->bidCommodity();
+                this->bidCommodity();
                 break;
             case 5:
-//                this->viewOrderList();
+                this->viewOrderList();
                 break;
             case 6: // exit
                 isValid = true;
@@ -82,6 +82,59 @@ void BuyerCenter::viewDetailedCommodity() {
               << "number: " << response->number << std::endl
               << "description: " << response->description << std::endl;
     printf("************************************************************\n");
+}
+
+void BuyerCenter::bidCommodity() {
+    printf("please type in the commodityID you want to bid: ");
+    std::string _commodityID;
+    std::cin >> _commodityID;
+    commodityInfo * response = this->auctionSystem->findCommodity(_commodityID);
+    if(response == nullptr) {
+        printf("failed! commodity not find!\n");
+        return ;
+    }
+    printf("************************************************************\n");
+    std::cout << "commodityID: " << response->commodityID << std::endl
+              << "commodityName: " << response->commodityName << std::endl
+              << "floorPrice: " << std::setiosflags(std::ios::fixed) << std::setprecision(1) << response->floorPrice << std::endl
+              << "number: " << response->number << std::endl
+              << "description: " << response->description << std::endl;
+    printf("************************************************************\n");
+    printf("do you want to bid ?(y/n): ");
+    char input;
+    std::cin >> input;
+    while(input != 'y' && input != 'n') {
+        printf("wrong input! type again!\n");
+        scanf("%c", &input);
+    }
+    if(input == 'n') {
+        printf("bid cancelled!\n");
+        return ;
+    }
+    printf("please type in your bid price: ");
+    float _bidPrice;
+    std::cin >> _bidPrice;
+    if(_bidPrice < response->floorPrice) {
+        printf("failed! your bid price is below the floorPrice!\n");
+        return ;
+    }
+    if(!this->auctionSystem->bidCheck(this->curUser->userID, _commodityID)) {
+        printf("failed! you've already bid once for this commodity!\n");
+        return ;
+    }
+    if(this->curUser->balance < _bidPrice) {
+        printf("failed! you don't have enough money!\n");
+        return ;
+    }
+    printf("bid success!\n");
+    //生成订单
+    this->auctionSystem->addOrder(response->commodityID, response->sellerID, this->curUser->userID, _bidPrice);
+    //买家扣款
+    this->curUser->balance -= _bidPrice;
+}
+
+void BuyerCenter::viewOrderList() {
+    this->auctionSystem->viewOrderList(this->curUser->userID);
 }
 
 

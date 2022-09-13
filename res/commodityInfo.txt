@@ -5,3 +5,5 @@ M003,test3,10.0,123,3,U001,2022-09-13,onAuction
 M004,test4,90.0,1,4,U001,2022-09-13,onAuction
 M005,test,100.5,2,2,U001,2022-09-13,onAuction
 M006,shit,199.1,99,pieceofshit,U001,2022-09-13,onAuction
+M007,mouse,9.9,108,shit,U001,2022-09-13,onAuction
+M008,ohno,9999.0,1,vip,U001,2022-09-13,onAuction

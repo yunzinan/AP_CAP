@@ -49,7 +49,7 @@ void SellerCenter::selectOpt() {
                 this->cancelCommodity();
                 break;
             case 5:
-//                this->viewOrderList();
+                this->viewOrderList();
                 break;
             case 6: // exit
                 isValid = true;
@@ -62,7 +62,7 @@ void SellerCenter::selectOpt() {
 }
 
 SellerCenter::~SellerCenter() {
-    delete this->auctionSystem;
+//    delete this->auctionSystem;
 }
 
 void SellerCenter::releaseCommodity() {
@@ -253,4 +253,8 @@ void SellerCenter::cancelCommodity() {
     else {
         printf("failed! wrong input!\n");
     }
+}
+
+void SellerCenter::viewOrderList() {
+    this->auctionSystem->viewOrderList_S(this->curUser->userID);
 }

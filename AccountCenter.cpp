@@ -52,7 +52,7 @@ void AccountCenter::viewUserInfo() {
     std::cout << "phoneNumber: " << this->curUser->phonenumber << std::endl;
     std::cout << "address: " << this->curUser->address << std::endl;
     std::cout << "balance: " <<  std::setiosflags(std::ios::fixed) << std::setprecision(1) << this->curUser->balance << std::endl;
-    std::cout << "userState" << this->curUser->userState << std::endl;
+    std::cout << "userState: " << this->curUser->userState << std::endl;
     printf("************************************************************\n");
 }
 
