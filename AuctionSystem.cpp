@@ -179,4 +179,21 @@ commodityInfo *AuctionSystem::findCommodity(std::string _commodityID, std::strin
     return nullptr;
 }
 
+void AuctionSystem::searchCommodity(std::string _commodityName) {
+    printf("------------------------------------------------------------\n");
+    printf("************************Search Result***********************\n");
+    printf("------------------------------------------------------------\n");
+    printf("ID Name FloorPrice Number AddedDate State\n");
+    for(int i = 0; i < this->commodityIdx; i++) {
+        if(this->commodityInfoList[i]->commodityName == _commodityName && this->commodityInfoList[i]->state == "onAuction") {
+            std::cout << this->commodityInfoList[i]->commodityID << " "
+                      << this->commodityInfoList[i]->commodityName << " "
+                      << std::setiosflags(std::ios::fixed) << std::setprecision(1) << this->commodityInfoList[i]->floorPrice << " "
+                      << this->commodityInfoList[i]->number << " "
+                      << this->commodityInfoList[i]->addedDate << " "
+                      << this->commodityInfoList[i]->state << std::endl;
+        }
+    }
+}
+
 

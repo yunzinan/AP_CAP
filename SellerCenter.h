@@ -25,7 +25,7 @@ class SellerCenter {
     tm *ltm;
     myTimer *_myTimer;
 public:
-    SellerCenter(userInfo *_curUser);
+    SellerCenter(userInfo *_curUser, AuctionSystem * _system);
     void selectOpt();
     void releaseCommodity();
     void viewCommodityList(); // 查看 该用户 发布的商品

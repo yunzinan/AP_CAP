@@ -6,7 +6,7 @@
 #include "SellerCenter.h"
 
 
-SellerCenter::SellerCenter(userInfo *_curUser) {
+SellerCenter::SellerCenter(userInfo *_curUser, AuctionSystem *_system) {
     //获取当前时间
     time_t now = time(0);
     this->ltm = localtime(&now);
@@ -19,7 +19,7 @@ SellerCenter::SellerCenter(userInfo *_curUser) {
     _myTimer->sec = ltm->tm_sec;
     this->curUser = _curUser;
     //创建auctionSystem对象
-    this->auctionSystem = new AuctionSystem;
+    this->auctionSystem = _system;
 //    this->selectOpt();
 }
 

@@ -1,6 +1,7 @@
 commodityID,commodityName,floorPrice,number,description,sellerID,addedDate,state
 M001,test1,99.9,10,1,U001,2022-09-13,onAuction
-M002,test2,10.1,10,2,U001,2022-09-13,onAuction
+M002,test2,10.1,10,2,U001,2022-09-13,removed
 M003,test3,10.0,123,3,U001,2022-09-13,onAuction
 M004,test4,90.0,1,4,U001,2022-09-13,onAuction
 M005,test,100.5,2,2,U001,2022-09-13,onAuction
+M006,shit,199.1,99,pieceofshit,U001,2022-09-13,onAuction

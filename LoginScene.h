@@ -7,6 +7,7 @@
 
 #include <cstdio>
 #include <string>
+#include "AuctionSystem.h"
 
 #define USERCAPACITY 20
 

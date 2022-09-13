@@ -7,6 +7,7 @@
 #include "LoginScene.h"
 #include "AccountCenter.h"
 #include "SellerCenter.h"
+#include "BuyerCenter.h"
 
 LoginScene::LoginScene() {
     this->loadUserInfo();
@@ -213,8 +214,10 @@ void LoginScene::selectUserOpt() {//1. 我是卖家 2. 我是买家 3. 个人中
     //    system("cls");
     int ans;
     bool isValid = false;
+    AuctionSystem auctionSystem;
     AccountCenter a;
-    SellerCenter s(this->curUser);
+    BuyerCenter b(this->curUser, &auctionSystem);
+    SellerCenter s(this->curUser, &auctionSystem);
     a.init(this, this->curUser);
     while(!isValid) {
         printf("------------------------------------------------------------\n");
@@ -234,6 +237,7 @@ void LoginScene::selectUserOpt() {//1. 我是卖家 2. 我是买家 3. 个人中
             case 2:
                 printf("going to the Buyer Center...\n");
                 //调用买家模块
+                b.selectOpt();
                 break;
             case 3:
                 printf("going to the Account Center...\n");
