@@ -6,6 +6,7 @@
 #define CAP_ACCOUNTCENTER_H
 
 #include "LoginScene.h"
+#include "config.h"
 
 class AccountCenter {
     LoginScene *parent;

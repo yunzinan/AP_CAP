@@ -256,7 +256,22 @@ void AdminCenter::banUser() {
 }
 
 void AdminCenter::endAuction() {
-
+    printf("are you sure to end auction? (y/n)\n");
+    std::string ans;
+    std::cin >> ans;
+    while(ans != "y" && ans != "n") {
+        printf("error! type again!\n");
+        std::cin >> ans;
+    }
+    if(ans == "n") return ; // ensure command
+    this->auctionSystem->setUserInfo(this->userInfoList, this->userIdx);
+    this->auctionSystem->calcResult();
+    //筛选所有状态为inProcess的订单
+    //按照commodityID进行分类
+    //获取该商品的库存, 若充足, 则全部success
+    //否则对订单的bidPrice和bidTime进行排序, 选择前number名succeeded, others failed
+    //succeeded: 1. seller.balance++ 2. commodity.number--(0->removed) 3. order.state = "succeeded"
+    //failed: 1. buyer.balance++ 2. order.state = "failed"
 }
 
 

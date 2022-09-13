@@ -105,6 +105,7 @@ void AccountCenter::modifyUserInfo() {
             break;
         default:
             printf("error! type again!\n");
+            std::cin >> ans;
     }
 }
 

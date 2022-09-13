@@ -8,20 +8,8 @@
 #include <cstdio>
 #include <string>
 #include "AuctionSystem.h"
+#include "config.h"
 
-#define USERCAPACITY 20
-
-typedef struct userInfo
-
-    {
-        std::string userID; // U001
-        std::string username; // no more than 10
-        std::string password; // no more than 20
-        std::string phonenumber; // no more than 40, numbers only
-        std::string address; // no more than 40,
-        float balance; // set precision 1
-        std::string userState; // activate, inactivate
-}userInfo;
 
 
 class LoginScene

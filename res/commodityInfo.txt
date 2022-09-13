@@ -1,9 +1,6 @@
 commodityID,commodityName,floorPrice,number,description,sellerID,addedDate,state
-M001,test1,99.9,10,1,U001,2022-09-13,onAuction
-M002,test2,10.1,10,2,U001,2022-09-13,removed
-M003,test3,10.0,123,3,U001,2022-09-13,onAuction
-M004,test4,90.0,1,4,U001,2022-09-13,onAuction
-M005,test,100.5,2,2,U001,2022-09-13,onAuction
-M006,shit,199.1,99,pieceofshit,U001,2022-09-13,onAuction
-M007,mouse,9.9,108,shit,U001,2022-09-13,onAuction
-M008,ohno,9999.0,1,vip,U001,2022-09-13,onAuction
+M001,apple,100.0,0,the-only-one,U001,2022-09-13,removed
+M002,bed,9.9,0,bed,U001,2022-09-13,removed
+M003,shit,0.0,97,nothing,U001,2022-09-13,onAuction
+M004,Cat,10.1,0,the-only-cat,U003,2022-09-13,removed
+M005,computer,999.9,0,pc,U001,2022-09-13,removed

@@ -8,30 +8,12 @@
 #include <cstdio>
 #include <string>
 #include <ctime>
+#include "LoginScene.h"
+#include "config.h"
+#include "MyVector.h"
 
 #define COMMODITYCAPACITY 20
 #define ORDERCAPACITY 50
-
-typedef struct commodityInfo{
-   std::string commodityID;
-   std::string sellerID;
-   std::string commodityName;
-   std::string description;
-   std::string addedDate; // yyyy-mm-dd
-   std::string state; // onAuction, removed
-   float floorPrice; // 底价
-   int number;
-}commodityInfo;
-
-typedef struct orderInfo{
-    std::string orderID;
-    std::string commodityID;
-    std::string sellerID;
-    std::string buyerID;
-    std::string bidTime; //yyyy-mm-dd-hh-mm-ss
-    float bidPrice;
-    std::string state; // succeeded, failed, inProcess, cancelled
-}orderInfo;
 
 typedef struct myTimer{
     int year;
@@ -45,12 +27,16 @@ typedef struct myTimer{
 class AuctionSystem {
     commodityInfo *commodityInfoList[COMMODITYCAPACITY];
     orderInfo *orderInfoList[ORDERCAPACITY];
+    userInfo **userInfoList;
     int commodityIdx = 0;
     int orderIdx = 0;
+    int userIdx = 0;
     tm *ltm;
     myTimer *_myTimer;
+    MyVector vector[COMMODITYCAPACITY];
 public:
     AuctionSystem();
+    void setUserInfo(userInfo **_userInfoList, int _idx);
     void loadCommodityInfo();//初始化, 将commodityInfo.txt信息写入
     void loadOrderInfo();
     commodityInfo *createCommodity(std::string &buffer); //根据string信息创建商品对象(初始化
@@ -70,6 +56,8 @@ public:
     void viewOrderList(std::string buyerID); //买家功能, 查看属于该买家的订单
     void viewOrderList_S(std::string sellerID); //卖家功能, 查看属于该卖家的订单
     void viewOrderList(); //管理员功能, 展示所有订单
+    void calcResult(); //核心功能, 计算结果
+    int ID2int(std::string &str);
 };
 
 

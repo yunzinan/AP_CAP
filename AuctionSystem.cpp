@@ -1,6 +1,7 @@
 //
 // Created by Jack_shen on 2022/9/12.
 //
+
 #include <iostream>
 #include <fstream>
 #include <iomanip>
@@ -326,6 +327,17 @@ void AuctionSystem::addOrder(std::string commodityID, std::string sellerID, std:
 }
 
 std::string AuctionSystem::generateTime() {
+    //获取当前时间
+    time_t now = time(0);
+    this->ltm = localtime(&now);
+    this->_myTimer = new myTimer;
+    _myTimer->year = 1900 + ltm->tm_year;
+    _myTimer->month = 1 + ltm->tm_mon;
+    _myTimer->day = ltm->tm_mday;
+    _myTimer->hour = ltm->tm_hour;
+    _myTimer->min = ltm->tm_min;
+    _myTimer->sec = ltm->tm_sec;
+
     std::string timeStr;
     timeStr += std::to_string(this->_myTimer->year);
 
@@ -431,6 +443,39 @@ void AuctionSystem::viewOrderList() {
                   << std::setiosflags(std::ios::fixed) << std::setprecision(1) << this->orderInfoList[i]->bidPrice << " "
                   << this->orderInfoList[i]->state << std::endl;
         }
+}
+
+void AuctionSystem::setUserInfo(userInfo **_userInfoList, int _idx) {
+    this->userInfoList = _userInfoList;
+    this->userIdx = _idx;
+}
+
+void AuctionSystem::calcResult() {
+    //clear:避免未释放对象前再次调用该函数, 此时已经存了上一次的node
+    for(int i = 0; i < this->commodityIdx; i++) {
+        this->vector[i].clear();
+    }
+    //initialize
+    for(int i = 0; i < this->commodityIdx; i++) {
+        this->vector[i].ini(commodityInfoList[i], userInfoList[ID2int(commodityInfoList[i]->sellerID)]);
+    }
+    //filter & categorize
+    for(int i = 0; i < this->orderIdx; i++) {
+        if(this->orderInfoList[i]->state == "inProcess") {
+            this->vector[ID2int(orderInfoList[i]->commodityID)].addNode(orderInfoList[i], userInfoList[ID2int(orderInfoList[i]->buyerID)]);
+        }
+    }
+    //rank & update
+    for(int i = 0; i < this->commodityIdx; i++) {
+        if(vector[i].empty()) continue; //说明没有订单
+        vector[i].rank();
+        vector[i].update();
+    }
+
+}
+
+int AuctionSystem::ID2int(std::string &str) { // "M001"->0
+    return atoi(str.substr(1, 3).c_str()) - 1;
 }
 
 

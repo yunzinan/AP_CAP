@@ -7,6 +7,8 @@
 
 #include "LoginScene.h"
 #include "AuctionSystem.h"
+#include "config.h"
+
 class BuyerCenter {
     AuctionSystem *auctionSystem;
     userInfo *curUser;

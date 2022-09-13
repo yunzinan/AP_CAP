@@ -6,6 +6,7 @@
 #define CAP_ADMINCENTER_H
 #include "AuctionSystem.h"
 #include "LoginScene.h"
+#include "config.h"
 
 class AdminCenter {
     AuctionSystem * auctionSystem; // 里面有commodityList 和 orderInfoList
@@ -14,8 +15,7 @@ class AdminCenter {
 
 public:
     AdminCenter(userInfo *_userInfoList[], int _idx);
-    void loadUserInfo();
-
+    void loadUserInfo();//deprecated: 另一种解决方案: LoginScene不是构造时就loadUserInfo, 而是进入UserLogin函数时才进行load, 同时释放&写入放在UserLoginExit处
     void selectOpt(); //展示并选择选项
     void viewCommodityList();
     void viewOrderList();

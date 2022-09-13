@@ -9,6 +9,7 @@
 #include <ctime>
 #include "LoginScene.h"
 #include "AuctionSystem.h"
+#include "config.h"
 
 class SellerCenter {
     userInfo *curUser;
