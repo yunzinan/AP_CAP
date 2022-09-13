@@ -32,7 +32,7 @@ void SellerCenter::selectOpt() {
         printf("**************************Seller Center*********************\n");
         printf("------------------------------------------------------------\n");
         printf("1. Release Commodity 2. View Commodity List\n"
-               " 3. Modify Commodity 4. Cancel Commodity 5. View Order List 6. Exit\n");
+               "3. Modify Commodity 4. Cancel Commodity 5. View Order List 6. Exit\n");
         printf("type a number to continue: ");
         scanf("%d", &ans);
         switch (ans) {
@@ -220,7 +220,7 @@ void SellerCenter::cancelCommodity() {
     std::string _commodityID;
     std::cin >> _commodityID;
     //find
-    commodityInfo *response = this->auctionSystem->findCommodity(_commodityID);
+    commodityInfo *response = this->auctionSystem->findCommodity(_commodityID, this->curUser->userID);
     if(response == nullptr) {
         printf("failed! commodity not find!\n");
         return ;

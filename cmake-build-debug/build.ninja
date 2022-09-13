@@ -85,6 +85,12 @@ build CMakeFiles/CAP.dir/AuctionSystem.cpp.obj: CXX_COMPILER__CAP_Debug C$:/User
   OBJECT_DIR = CMakeFiles\CAP.dir
   OBJECT_FILE_DIR = CMakeFiles\CAP.dir
 
+build CMakeFiles/CAP.dir/AdminCenter.cpp.obj: CXX_COMPILER__CAP_Debug C$:/Users/Jack_shen/Desktop/CAP/AdminCenter.cpp || cmake_object_order_depends_target_CAP
+  DEP_FILE = CMakeFiles\CAP.dir\AdminCenter.cpp.obj.d
+  FLAGS = -g -std=gnu++14
+  OBJECT_DIR = CMakeFiles\CAP.dir
+  OBJECT_FILE_DIR = CMakeFiles\CAP.dir
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target CAP
@@ -93,7 +99,7 @@ build CMakeFiles/CAP.dir/AuctionSystem.cpp.obj: CXX_COMPILER__CAP_Debug C$:/User
 #############################################
 # Link the executable CAP.exe
 
-build CAP.exe: CXX_EXECUTABLE_LINKER__CAP_Debug CMakeFiles/CAP.dir/main.cpp.obj CMakeFiles/CAP.dir/LoginScene.cpp.obj CMakeFiles/CAP.dir/AccountCenter.cpp.obj CMakeFiles/CAP.dir/BuyerCenter.cpp.obj CMakeFiles/CAP.dir/SellerCenter.cpp.obj CMakeFiles/CAP.dir/AuctionSystem.cpp.obj
+build CAP.exe: CXX_EXECUTABLE_LINKER__CAP_Debug CMakeFiles/CAP.dir/main.cpp.obj CMakeFiles/CAP.dir/LoginScene.cpp.obj CMakeFiles/CAP.dir/AccountCenter.cpp.obj CMakeFiles/CAP.dir/BuyerCenter.cpp.obj CMakeFiles/CAP.dir/SellerCenter.cpp.obj CMakeFiles/CAP.dir/AuctionSystem.cpp.obj CMakeFiles/CAP.dir/AdminCenter.cpp.obj
   FLAGS = -g
   LINK_LIBRARIES = -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   OBJECT_DIR = CMakeFiles\CAP.dir

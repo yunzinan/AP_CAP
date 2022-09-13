@@ -402,5 +402,36 @@ void AuctionSystem::viewOrderList_S(std::string sellerID) {
     }
 }
 
+void AuctionSystem::showCommodityListAll() {
+    printf("------------------------------------------------------------\n");
+    printf("***********************Commodity List***********************\n");
+    printf("------------------------------------------------------------\n");
+    printf("ID Name FloorPrice Number AddedDate State\n");
+    for(int i = 0; i < this->commodityIdx; i++) {
+        std::cout << this->commodityInfoList[i]->commodityID << " "
+                  << this->commodityInfoList[i]->commodityName << " "
+                  << std::setiosflags(std::ios::fixed) << std::setprecision(1) << this->commodityInfoList[i]->floorPrice << " "
+                  << this->commodityInfoList[i]->number << " "
+                  << this->commodityInfoList[i]->addedDate << " "
+                  << this->commodityInfoList[i]->state << std::endl;
+    }
+}
+
+void AuctionSystem::viewOrderList() {
+    printf("------------------------------------------------------------\n");
+    printf("**************************Order List************************\n");
+    printf("------------------------------------------------------------\n");
+    printf("OrderID CommodityID SellerID BuyerID BidTime BidPrice State\n");
+    for(int i = 0; i < this->orderIdx; i++) {
+        std::cout << this->orderInfoList[i]->orderID << " "
+                  << this->orderInfoList[i]->commodityID << " "
+                  << this->orderInfoList[i]->sellerID << " "
+                  << this->orderInfoList[i]->buyerID << " "
+                  << this->orderInfoList[i]->bidTime << " "
+                  << std::setiosflags(std::ios::fixed) << std::setprecision(1) << this->orderInfoList[i]->bidPrice << " "
+                  << this->orderInfoList[i]->state << std::endl;
+        }
+}
+
 
 

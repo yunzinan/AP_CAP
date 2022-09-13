@@ -58,16 +58,18 @@ public:
     void addCommodity(commodityInfo *_commodityInfo);//添加新的商品
     void addOrder(std::string commodityID, std::string sellerID, std::string buyerID, float bidPrice);
     std::string addCommodityCheck(std::string commodityName); // 主要是创造commodityID返回, 因为不同商家可以起相同的名字.
-    commodityInfo * findCommodity(std::string _commodityID); // 买家功能: 根据商品ID查找对应的商品指针
+    commodityInfo * findCommodity(std::string _commodityID); // 买家&管理员功能: 根据商品ID查找对应的商品指针
     commodityInfo * findCommodity(std::string _commodityID, std::string _sellerID); //卖家功能: 查找某个用户的商家商品
     void searchCommodity(std::string _commodityName); //买家功能: 完全匹配, 理论上讲应该要传值回去而不是在这里显示的.
     void showCommodityList(std::string _sellerID);// 卖家功能: 只展示属于卖家的商品
     void showCommodityList(); //买家功能, 展示所有在售的商品
+    void showCommodityListAll(); //管理员功能, 显示所有的商品
     ~AuctionSystem();
     bool bidCheck(std::string _buyerID, std::string _commodityID); //检查这个买家是否之前已经有状态为"inProcess"的订单
     std::string generateTime(); //返回yyyy-mm-dd-hh:mm:ss的字符串
     void viewOrderList(std::string buyerID); //买家功能, 查看属于该买家的订单
     void viewOrderList_S(std::string sellerID); //卖家功能, 查看属于该卖家的订单
+    void viewOrderList(); //管理员功能, 展示所有订单
 };
 
 

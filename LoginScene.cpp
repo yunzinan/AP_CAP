@@ -8,6 +8,7 @@
 #include "AccountCenter.h"
 #include "SellerCenter.h"
 #include "BuyerCenter.h"
+#include "AdminCenter.h"
 
 LoginScene::LoginScene() {
     this->loadUserInfo();
@@ -115,6 +116,10 @@ void LoginScene::userLogin() {
         std::cin >> passwordBuffer;
         this->curUser = this->userLoginCheck(usernameBuffer, passwordBuffer);
         if(this->curUser != nullptr) {
+            if(this->curUser->userState == "inactive") {
+                printf("permission denied! you've been banned!\n");
+                return ;
+            }
             printf("success!\n");
             isValid = true;
         }
@@ -206,6 +211,8 @@ void LoginScene::adminLogin() {
     }
     if(isValid) {//进入admin界面
         printf("going to the admin scene!\n");
+        AdminCenter a(this->userInfoList, this->idx);//同样不需要手动释放
+        a.selectOpt();
     }
     return;
 }
@@ -214,7 +221,7 @@ void LoginScene::selectUserOpt() {//1. 我是卖家 2. 我是买家 3. 个人中
     //    system("cls");
     int ans;
     bool isValid = false;
-    AuctionSystem auctionSystem;
+    AuctionSystem auctionSystem;//注意: 由于不是动态申请, 所以不需要进行释放
     AccountCenter a;
     BuyerCenter b(this->curUser, &auctionSystem);
     SellerCenter s(this->curUser, &auctionSystem);

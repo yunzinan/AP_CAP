@@ -25,8 +25,8 @@ void BuyerCenter::selectOpt() {
         printf("**************************Seller Center*********************\n");
         printf("------------------------------------------------------------\n");
         printf("1. View CommodityList 2. Search Commodity\n"
-               " 3. View DetailedCommodity 4. Bid Commodity\n"
-               " 5. View Order List 6. Exit\n");
+               "3. View DetailedCommodity 4. Bid Commodity\n"
+               "5. View Order List 6. Exit\n");
         printf("type a number to continue: ");
         scanf("%d", &ans);
         switch (ans) {
