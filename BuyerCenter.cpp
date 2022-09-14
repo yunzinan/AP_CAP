@@ -28,7 +28,7 @@ void BuyerCenter::selectOpt() {
                "3. View DetailedCommodity 4. Bid Commodity\n"
                "5. View Order List 6. Exit\n");
         printf("type a number to continue: ");
-        scanf("%d", &ans);
+        std::cin >> ans;
         switch (ans) {
             case 1:
                 this->viewCommodityList();
@@ -50,6 +50,7 @@ void BuyerCenter::selectOpt() {
                 break;
             default:
                 printf("error! type again!\n");
+                std::cin >> ans;
                 break;
         }
     }

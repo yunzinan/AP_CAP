@@ -79,7 +79,7 @@ void LoginScene::selectOpt() {
         printf("------------------------------------------------------------\n");
         printf("1. UserLogin 2. UserRegister 3. AdminLogin 4. exit\n");
         printf("type a number to continue: ");
-        scanf("%d", &ans);
+        std::cin >> ans;
         switch (ans) {
             case 1:
                 this->userLogin();
@@ -95,6 +95,7 @@ void LoginScene::selectOpt() {
                 break;
             default:
                 printf("error! type again!\n");
+                std::cin >> ans;
                 break;
         }
     }
@@ -234,7 +235,7 @@ void LoginScene::selectUserOpt() {//1. 我是卖家 2. 我是买家 3. 个人中
         std::cout << this->curUser->username << std::endl;
         printf("1. Seller Center 2. Buyer Center 3. Account Center 4. exit\n");
         printf("select a num: ");
-        scanf("%d", &ans);
+        std::cin >> ans;
         switch (ans) {
             case 1:
                 printf("going to the Seller Center...\n");
@@ -257,6 +258,7 @@ void LoginScene::selectUserOpt() {//1. 我是卖家 2. 我是买家 3. 个人中
                 break;
             default:
                 printf("error! type again!\n");
+                std::cin >> ans;
                 break;
         }
     }

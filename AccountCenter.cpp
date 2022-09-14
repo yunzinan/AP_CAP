@@ -65,7 +65,7 @@ void AccountCenter::modifyUserInfo() {
     std::string _password;
     std::string _phoneNumber;
     std::string _address;
-    scanf("%d", &ans);
+    std::cin >> ans;
     switch (ans) {
         case 1:
             std::cout << "your current username:" << this->curUser->username << std::endl;

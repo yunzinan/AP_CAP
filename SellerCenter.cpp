@@ -34,7 +34,7 @@ void SellerCenter::selectOpt() {
         printf("1. Release Commodity 2. View Commodity List\n"
                "3. Modify Commodity 4. Cancel Commodity 5. View Order List 6. Exit\n");
         printf("type a number to continue: ");
-        scanf("%d", &ans);
+        std::cin >> ans;
         switch (ans) {
             case 1:
                 this->releaseCommodity();
@@ -56,6 +56,7 @@ void SellerCenter::selectOpt() {
                 break;
             default:
                 printf("error! type again!\n");
+                std::cin >> ans;
                 break;
         }
     }
@@ -235,7 +236,7 @@ void SellerCenter::cancelCommodity() {
     printf("1. cancelCommodity 2. re-releaseCommodity\n");
     printf("select a number: ");
     int ans;
-    scanf("%d", &ans);
+    std::cin >> ans;
     if(ans == 1) {
         if(response->state == "onAuction") {
             response->state = "removed";
@@ -252,6 +253,7 @@ void SellerCenter::cancelCommodity() {
     }
     else {
         printf("failed! wrong input!\n");
+        std::cin >> ans;
     }
 }
 

@@ -27,7 +27,7 @@ void AdminCenter::selectOpt() {
                     "5. View UserList 6. Ban User\n"
                     "7. End Auction 8. Exit\n");
         printf("type a number to continue: ");
-        scanf("%d", &ans);
+        std::cin >> ans;
         switch (ans) {
             case 1:
                 this->viewCommodityList();
@@ -55,6 +55,7 @@ void AdminCenter::selectOpt() {
                 break;
             default:
                 printf("error! type again!\n");
+                std::cin >> ans;
                 break;
         }
     }
