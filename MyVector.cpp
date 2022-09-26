@@ -1,8 +1,4 @@
-//
-// Created by Jack_shen on 2022/9/13.
-//
-
-#include "MyVector.h"
+#include "myvector.h"
 
 void MyVector::ini(commodityInfo *_commodity, userInfo *_seller) {
     this->commodity = _commodity;
@@ -33,20 +29,20 @@ void MyVector::rank() {//按照node.orderInfo->bidPrice, bidTime排序, BubbleSo
     }
 }
 
-bool MyVector::timeLess(std::string &time1, std::string &time2) {//如果time1 < time2 return true;
+bool MyVector::timeLess(QString time1, QString time2) {//如果time1 < time2 return true;
     //split
-    int y1 = atoi(time1.substr(0, 4).c_str());
-    int y2 = atoi(time2.substr(0, 4).c_str());
-    int m1 = atoi(time1.substr(5, 2).c_str());
-    int m2 = atoi(time2.substr(5, 2).c_str());
-    int d1 = atoi(time1.substr(8, 2).c_str());
-    int d2 = atoi(time2.substr(8, 2).c_str());
-    int h1 = atoi(time1.substr(11, 2).c_str());
-    int h2 = atoi(time2.substr(11, 2).c_str());
-    int M1 = atoi(time1.substr(14, 2).c_str());
-    int M2 = atoi(time2.substr(14, 2).c_str());
-    int s1 = atoi(time1.substr(17, 2).c_str());
-    int s2 = atoi(time2.substr(17, 2).c_str());
+    int y1 = time1.mid(0, 4).toInt();
+    int y2 = time2.mid(0, 4).toInt();
+    int m1 = time1.mid(5, 2).toInt();
+    int m2 = time2.mid(5, 2).toInt();
+    int d1 = time1.mid(8, 2).toInt();
+    int d2 = time2.mid(8, 2).toInt();
+    int h1 = time1.mid(11, 2).toInt();
+    int h2 = time2.mid(11, 2).toInt();
+    int M1 = time1.mid(14, 2).toInt();
+    int M2 = time2.mid(14, 2).toInt();
+    int s1 = time1.mid(17, 2).toInt();
+    int s2 = time2.mid(17, 2).toInt();
     if(y1 != y2) return y1 < y2;
     if(m1 != m2) return m1 < m2;
     if(d1 != d2) return d1 < d2;

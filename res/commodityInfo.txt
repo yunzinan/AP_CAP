@@ -1,6 +1,0 @@
-commodityID,commodityName,floorPrice,number,description,sellerID,addedDate,state
-M001,apple,100.0,0,the-only-one,U001,2022-09-13,removed
-M002,bed,9.9,0,bed,U001,2022-09-13,removed
-M003,shit,0.0,97,nothing,U001,2022-09-13,onAuction
-M004,Cat,10.1,0,the-only-cat,U003,2022-09-13,removed
-M005,computer,999.9,0,pc,U001,2022-09-13,removed

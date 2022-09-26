@@ -1,279 +1,130 @@
-//
-// Created by Jack_shen on 2022/9/13.
-//
+#include "admincenter.h"
+#include "ui_admincenter.h"
+#include <QMessageBox>
 
-#include "AdminCenter.h"
-#include <iomanip>
-#include <iostream>
-#include <fstream>
-
-AdminCenter::AdminCenter(userInfo *_userInfoList[USERCAPACITY], int _idx) {
-    this->auctionSystem = new AuctionSystem;
-    this->userInfoList = _userInfoList;
-    this->userIdx = _idx;
-    //this->loadUserInfo();
-}
-
-void AdminCenter::selectOpt() {
-    int ans;
-    bool isValid = false;
-    while(!isValid) {
-        //        system("cls");
-        printf("------------------------------------------------------------\n");
-        printf("***************************Admin Center*********************\n");
-        printf("------------------------------------------------------------\n");
-        printf("1. View CommodityList 2. Search Commodity\n"
-                    "3. Cancel Commodity 4. View OrderList\n"
-                    "5. View UserList 6. Ban User\n"
-                    "7. End Auction 8. Exit\n");
-        printf("type a number to continue: ");
-        std::cin >> ans;
-        switch (ans) {
-            case 1:
-                this->viewCommodityList();
-                break;
-            case 2:
-                this->searchCommodity();
-                break;
-            case 3:
-                this->cancelCommodity();
-                break;
-            case 4:
-                this->viewOrderList();
-                break;
-            case 5:
-                this->viewUserList();
-                break;
-            case 6:
-                this->banUser();
-                break;
-            case 7:
-                this->endAuction();
-                break;
-            case 8: // exit
-                isValid = true;
-                break;
-            default:
-                printf("error! type again!\n");
-                std::cin >> ans;
-                break;
+AdminCenter::AdminCenter(QWidget *parent, AuctionSystem *auctionSystem) :
+    QMainWindow(parent),
+    ui(new Ui::AdminCenter)
+{
+    ui->setupUi(this);
+    setWindowTitle("管理员界面");
+    setMinimumSize(2000, 1500);
+    this->auctionSystem = auctionSystem;
+    connect(ui->pushButton_commodity, &QPushButton::clicked, [=](){
+        this->showCommodityList();
+    });
+    connect(ui->pushButton_2, &QPushButton::clicked, [=](){
+        this->showUserList();
+    });
+    connect(ui->pushButton_endAuction, &QPushButton::clicked, [=](){
+        if(QMessageBox::warning(this, "提醒", "您确定终止竞拍吗?", QMessageBox::Yes, QMessageBox::No) == QMessageBox::Yes) {
+            auto *ret = this->auctionSystem->calcResult();
+            this->showAuctionRes(ret);
         }
+    });
+    this->showCommodityList();
+    this->showOrderList();
+    this->showUserList();
+}
+
+AdminCenter::~AdminCenter()
+{
+    delete ui;
+}
+
+void AdminCenter::showUserList()
+{
+    userList *ret = this->auctionSystem->getUserList(ui->lineEdit_user->text());
+    ui->tableWidget_2->setRowCount(ret->size);
+    for(int i = 0; i < ret->size; i++) {
+        auto tab_userID = new QTableWidgetItem(ret->list[i]->userID);
+        auto tab_username = new QTableWidgetItem(ret->list[i]->username);
+        auto tab_password = new QTableWidgetItem(ret->list[i]->password);
+        auto tab_balance = new QTableWidgetItem(QString::number(ret->list[i]->balance, 'f', 1));
+        auto tab_state = new QTableWidgetItem(ret->list[i]->userState);
+        ui->tableWidget_2->setItem(i, 0, tab_userID);
+        ui->tableWidget_2->setItem(i, 1, tab_username);
+        ui->tableWidget_2->setItem(i, 2, tab_password);
+        ui->tableWidget_2->setItem(i, 3, tab_balance);
+        ui->tableWidget_2->setItem(i, 4, tab_state);
     }
 }
 
-AdminCenter::~AdminCenter() {
-    delete this->auctionSystem;
-//    // 写文件
-//    std::fstream fout;
-//    fout.open("../res/userInfo.txt", std::ios::out | std::ios::trunc);//覆盖写入
-//    // 释放内存, 写入文件
-//    fout << "userID,username,password,phoneNumber,address,balance,userState" << std::endl;
-//    for(int i = 0; i < this->userIdx; i++) {
-//        if(userInfoList[i] != nullptr) {
-//            fout << userInfoList[i]->userID << ",";
-//            fout << userInfoList[i]->username << ",";
-//            fout << userInfoList[i]->password << ",";
-//            fout << userInfoList[i]->phonenumber << ",";
-//            fout <<  userInfoList[i]->address << ",";
-//            fout << std::setiosflags(std::ios::fixed) << std::setprecision(1) << userInfoList[i]->balance << ",";
-//            fout << userInfoList[i]->userState << std::endl;
-//            delete userInfoList[i];
-//        }
-//    }
-//    fout.close();
-}
-
-void AdminCenter::loadUserInfo() {
-    std::fstream fin("../res/userInfo.txt", std::ios::in); //open
-    if (!fin) {
-        printf("file not exists!\n");
-        std::fstream fout;
-        fout.open("../res/userInfo.txt", std::ios::out);
-        std::string head = "userID,username,password,phoneNumber,address,balance,userState";
-        fout << head << std::endl;
-        fout.close();
-    }
-    fin.close();
-    fin.open("../res/userInfo.txt", std::ios::in);
-    std::string buffer;
-    fin >> buffer; // 先去掉标题行
-    while(!fin.eof()) { //读取
-        buffer.clear();
-        fin >>  buffer;
-        if(buffer.empty()){
-            //说明是因为换行符导致进入到这一行
-            break;
-        }
-        if(this->userIdx >= USERCAPACITY) {
-            printf("out of capacity!\n");
-        }
-        else {
-            this->userInfoList[this->userIdx++] = this->createUser(buffer);
-//            std::cout << this->userInfoList[this->idx-1]->username << this->userInfoList[this->idx-1]->password << std::endl;
-        }
-    }
-    fin.close();
-}
-
-userInfo* AdminCenter::createUser(std::string &buffer) {
-    if(buffer.empty()) {
-        printf("error! no input!\n");
-        return nullptr;
-    }
-    //create a new userInfo struct
-    userInfo * cur = new userInfo;
-    //split
-    int l = 0, r = 0;//双指针
-    //userID,
-    while(buffer[++r] != ',') {}
-    cur->userID = buffer.substr(l, r-l);
-    l = r+1;
-    //username,
-    while(buffer[++r] != ',') {}
-    cur->username = buffer.substr(l, r-l);
-    l = r+1;
-    //password,
-    while(buffer[++r] != ',') {}
-    cur->password = buffer.substr(l, r-l);
-    l = r+1;
-    //phonenumber,
-    while(buffer[++r] != ',') {}
-    cur->phonenumber = buffer.substr(l, r-l);
-    l= r+1;
-    //address,
-    while(buffer[++r] != ',') {}
-    cur->address = buffer.substr(l, r-l);
-    l = r+1;
-    //balance,
-    while(buffer[++r] != ',') {}
-    cur->balance = atof(buffer.substr(l, r-l).c_str());
-    l = r+1;
-    //userState
-    cur->userState = buffer.substr(l, buffer.length() - l);
-    return cur;
-}
-
-void AdminCenter::viewUserList() {
-    printf("------------------------------------------------------------\n");
-    printf("****************************User List***********************\n");
-    printf("------------------------------------------------------------\n");
-    printf("userID username password balance userState\n");
-    for(int i = 0; i < this->userIdx; i++) {
-        std::cout << this->userInfoList[i]->userID << " "
-                << this->userInfoList[i]->username << " "
-                << this->userInfoList[i]->password << " "
-                << std::setiosflags(std::ios::fixed) << std::setprecision(1) << this->userInfoList[i]->balance << " "
-                << this->userInfoList[i]->userState << std::endl;
-    }
-}
-
-void AdminCenter::viewCommodityList() {
-    this->auctionSystem->showCommodityListAll();
-}
-
-void AdminCenter::viewOrderList() {
-    this->auctionSystem->viewOrderList();
-}
-
-void AdminCenter::searchCommodity() {
-    printf("please type in the commodityName you want to search: ");
-    std::string _commodityName;
-    std::cin >> _commodityName;
-    this->auctionSystem->searchCommodity(_commodityName);
-}
-
-void AdminCenter::cancelCommodity() {
-    printf("type in the commodityID you want to cancel: ");
-    std::string _commodityID;
-    std::cin >> _commodityID;
-    //find
-    commodityInfo *response = this->auctionSystem->findCommodity(_commodityID);
-    if(response == nullptr) {
-        printf("failed! commodity not find!\n");
-        return ;
-    }
-    printf("************************************************************\n");
-    std::cout << "commodityID: " << response->commodityID << std::endl
-              << "commodityName: " << response->commodityName << std::endl
-              << "floorPrice: " << response->floorPrice << std::endl
-              << "number: " << response->number << std::endl
-              << "description: " << response->description << std::endl;
-    printf("************************************************************\n");
-    printf("1. cancelCommodity 2. re-releaseCommodity\n");
-    printf("select a number: ");
-    int ans;
-    scanf("%d", &ans);
-    if(ans == 1) {
-        if(response->state == "onAuction") {
-            response->state = "removed";
-            printf("success!\n");
-        }
-        else printf("failed! already removed!\n");
-    }
-    else if(ans == 2) {
-        if(response->state == "removed") {
-            response->state = "onAuction";
-            printf("success!\n");
-        }
-        else printf("failed! already onAuction!\n");
+void AdminCenter::showCommodityList()
+{
+    commodityList *ret = this->auctionSystem->getCommodity_a(ui->lineEdit_commodity->text());
+    if(ret->size == 0) {
+        QMessageBox::warning(this, "错误", "未找到您搜索的商品!");
     }
     else {
-        printf("failed! wrong input!\n");
-    }
-}
-
-void AdminCenter::banUser() {
-    std::string _userID;
-    printf("please type in the userID you want to ban: ");
-    std::cin >> _userID;
-    userInfo * cur = nullptr;
-    //find
-    for(int i = 0; i < this->userIdx; i++) {
-        if(this->userInfoList[i]->userID == _userID) {
-            cur = this->userInfoList[i];
+        ui->tableWidget->setRowCount(ret->size);
+        for(int i = 0; i < ret->size; i++) {
+            auto tab_spid = new QTableWidgetItem(ret->list[i]->commodityID);
+            auto tab_spmc = new QTableWidgetItem(ret->list[i]->commodityName);
+            auto tab_dj = new QTableWidgetItem(QString::number(ret->list[i]->floorPrice, 'f', 1));
+            auto tab_number = new QTableWidgetItem(QString::number(ret->list[i]->number));
+            auto tab_addedDate = new QTableWidgetItem(ret->list[i]->addedDate);
+            auto tab_state = new QTableWidgetItem(ret->list[i]->state);
+            ui->tableWidget->setItem(i, 0, tab_spid);
+            ui->tableWidget->setItem(i, 1, tab_spmc);
+            ui->tableWidget->setItem(i, 2, tab_dj);
+            ui->tableWidget->setItem(i, 3, tab_number);
+            ui->tableWidget->setItem(i, 4, tab_addedDate);
+            ui->tableWidget->setItem(i, 5, tab_state);
+//            qDebug() << tab_dj << tab_spmc;
         }
     }
-    if(cur == nullptr) {
-        printf("error! user not find!\n");
-        return ;
-    }
-    printf("are you sure to ban this user?(y/n)\n");
-    std::string ans;
-    std::cin >> ans;
-    while(ans != "y" && ans != "n") {
-        printf("error! type again!\n");
-        std::cin >> ans;
-    }
-    if(ans == "n") {
-        return ;
-    }
-    if(cur->userState == "removed") {
-        printf("error! user already banned!\n");
+}
+
+void AdminCenter::showOrderList()
+{
+    orderList *ret = this->auctionSystem->getOrderList_a();
+    if(ret->size == 0) {
+        QMessageBox::warning(this, "错误", "未找到您的订单!");
     }
     else {
-        cur->userState = "inactive";
-        printf("success!\n");
+        ui->tableWidget_3->setRowCount(ret->size);
+        for(int i = 0; i < ret->size; i++) {
+            auto tab_order = new QTableWidgetItem(ret->list[i]->orderID);
+            auto tab_commodity = new QTableWidgetItem(ret->list[i]->commodityID);
+            auto tab_seller = new QTableWidgetItem(ret->list[i]->sellerID);
+            auto tab_buyer = new QTableWidgetItem(ret->list[i]->buyerID);
+            auto tab_bidTime = new QTableWidgetItem(ret->list[i]->bidTime);
+            auto tab_bidPrice = new QTableWidgetItem(QString::number(ret->list[i]->bidPrice, 'f', 1));
+            auto tab_state = new QTableWidgetItem(ret->list[i]->state);
+            ui->tableWidget_3->setItem(i, 0, tab_order);
+            ui->tableWidget_3->setItem(i, 1, tab_commodity);
+            ui->tableWidget_3->setItem(i, 2, tab_seller);
+            ui->tableWidget_3->setItem(i, 3, tab_buyer);
+            ui->tableWidget_3->setItem(i, 4, tab_bidTime);
+            ui->tableWidget_3->setItem(i, 5, tab_bidPrice);
+            ui->tableWidget_3->setItem(i, 6, tab_state);
+        }
     }
 }
 
-void AdminCenter::endAuction() {
-    printf("are you sure to end auction? (y/n)\n");
-    std::string ans;
-    std::cin >> ans;
-    while(ans != "y" && ans != "n") {
-        printf("error! type again!\n");
-        std::cin >> ans;
+void AdminCenter::showAuctionRes(orderList *ret)
+{
+    ui->tableWidget_4->setRowCount(ret->size);
+    for(int i = 0; i < ret->size; i++) {
+        auto tab_order = new QTableWidgetItem(ret->list[i]->orderID);
+        auto tab_commodity = new QTableWidgetItem(ret->list[i]->commodityID);
+        auto tab_seller = new QTableWidgetItem(ret->list[i]->sellerID);
+        auto tab_buyer = new QTableWidgetItem(ret->list[i]->buyerID);
+        auto tab_bidTime = new QTableWidgetItem(ret->list[i]->bidTime);
+        auto tab_bidPrice = new QTableWidgetItem(QString::number(ret->list[i]->bidPrice, 'f', 1));
+        auto tab_state = new QTableWidgetItem(ret->list[i]->state);
+        auto tab_commodityName = new QTableWidgetItem(this->auctionSystem->getCommodity(ret->list[i]->commodityID)->commodityName);
+        ui->tableWidget_4->setItem(i, 0, tab_order);
+        ui->tableWidget_4->setItem(i, 1, tab_commodity);
+        ui->tableWidget_4->setItem(i, 2, tab_seller);
+        ui->tableWidget_4->setItem(i, 3, tab_buyer);
+        ui->tableWidget_4->setItem(i, 4, tab_commodityName);
+        ui->tableWidget_4->setItem(i, 5, tab_bidTime);
+        ui->tableWidget_4->setItem(i, 6, tab_bidPrice);
+        ui->tableWidget_4->setItem(i, 7, tab_state);
+//        qDebug() << ret->list[i]->orderID << " " << ret->list[i]->bidPrice;
     }
-    if(ans == "n") return ; // ensure command
-    this->auctionSystem->setUserInfo(this->userInfoList, this->userIdx);
-    this->auctionSystem->calcResult();
-    //筛选所有状态为inProcess的订单
-    //按照commodityID进行分类
-    //获取该商品的库存, 若充足, 则全部success
-    //否则对订单的bidPrice和bidTime进行排序, 选择前number名succeeded, others failed
-    //succeeded: 1. seller.balance++ 2. commodity.number--(0->removed) 3. order.state = "succeeded"
-    //failed: 1. buyer.balance++ 2. order.state = "failed"
 }
-
 
 

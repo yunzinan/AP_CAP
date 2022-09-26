@@ -1,59 +1,94 @@
-//
-// Created by Jack_shen on 2022/9/12.
-//
+#include "loginscene.h"
+#include "ui_loginscene.h"
 #include <iostream>
 #include <fstream>
 #include <iomanip>
-#include "LoginScene.h"
-#include "AccountCenter.h"
-#include "SellerCenter.h"
-#include "BuyerCenter.h"
-#include "AdminCenter.h"
+#include <QFile>
+#include <QTextStream>
+#include <QDir>
+#include <QMessageBox>
 
-LoginScene::LoginScene() {
+LoginScene::LoginScene(QWidget *parent)
+    : QMainWindow(parent)
+    , ui(new Ui::LoginScene)
+{
+    ui->setupUi(this);
+    this->setWindowTitle("登录界面");
+    this->setMinimumSize(400, 800);
+    this->setWindowOpacity(0.95);
+    connect(ui->loginBtn_user, &QPushButton::clicked, [=](){
+        qDebug() << "user loginBtn clicked!";
+        this->userLogin();
+    });
+    connect(ui->loginBtn_admin, &QPushButton::clicked, [=](){
+       qDebug() << "admin loginBtn clicked!";
+       this->adminLogin();
+    });
+    connect(ui->registBtn, &QPushButton::clicked, [=](){
+        qDebug() << "registBtn clicked!";
+        this->userRegister();
+    });
+    connect(ui->exitBtn_user, &QPushButton::clicked, [=](){
+        this->close();
+    });
+    connect(ui->exitBtn_admin, &QPushButton::clicked, [=](){
+        this->close();
+    });
+    connect(ui->exitBtn_regist, &QPushButton::clicked, [=](){
+        this->close();
+    });
     this->loadUserInfo();
-    this->selectOpt();
+    this->auctionSystem = new AuctionSystem(this->userInfoList, this->idx);
 }
 
-LoginScene::~LoginScene() {
+LoginScene::~LoginScene()
+{
+    delete ui;
     // 写文件
-    std::fstream fout;
-    fout.open("../res/userInfo.txt", std::ios::out | std::ios::trunc);//覆盖写入
-    // 释放内存, 写入文件
-    fout << "userID,username,password,phoneNumber,address,balance,userState" << std::endl;
+    QString filePath = QDir::currentPath() + "/res/userInfo.txt";//userInfo文件路径
+    QFile fout(filePath);
+    fout.open(QIODevice::WriteOnly | QIODevice::Truncate);
+    QTextStream foutWrite(&fout);
+    foutWrite << "userID,username,password,phoneNumber,address,balance,userState" << endl;
     for(int i = 0; i < this->idx; i++) {
         if(userInfoList[i] != nullptr) {
-            fout << userInfoList[i]->userID << ",";
-            fout << userInfoList[i]->username << ",";
-            fout << userInfoList[i]->password << ",";
-            fout << userInfoList[i]->phonenumber << ",";
-            fout <<  userInfoList[i]->address << ",";
-            fout << std::setiosflags(std::ios::fixed) << std::setprecision(1) << userInfoList[i]->balance << ",";
-            fout << userInfoList[i]->userState << std::endl;
+            qDebug() << "delete: " << userInfoList[i]->userID << QString::number(userInfoList[i]->balance, 'f', 1);
+            foutWrite << userInfoList[i]->userID << ",";
+            foutWrite << userInfoList[i]->username << ",";
+            foutWrite << userInfoList[i]->password << ",";
+            foutWrite << userInfoList[i]->phonenumber << ",";
+            foutWrite <<  userInfoList[i]->address << ",";
+            foutWrite <<  QString::number(userInfoList[i]->balance, 'f', 1) << ",";
+            foutWrite << userInfoList[i]->userState << endl;
             delete userInfoList[i];
         }
     }
     fout.close();
+    delete auctionSystem;
 }
 
 void LoginScene::loadUserInfo() {
-    std::fstream fin("../res/userInfo.txt", std::ios::in); //open
-    if (!fin) {
-        printf("file not exists!\n");
-        std::fstream fout;
-        fout.open("../res/userInfo.txt", std::ios::out);
-        std::string head = "userID,username,password,phoneNumber,address,balance,userState";
-        fout << head << std::endl;
+    qDebug() << QDir::currentPath();
+    QString filePath = QDir::currentPath() + "/res/userInfo.txt";//userInfo文件路径
+    QFile fin(filePath);
+    if (!fin.open(QIODevice::ReadOnly)) {
+        qDebug() << "file not exists!";
+        QFile fout(filePath);
+        fout.open(QIODevice::WriteOnly);
+        QTextStream foutWrite(&fout);
+        QString head = "userID,username,password,phoneNumber,address,balance,userState";
+        foutWrite << head << endl;
         fout.close();
     }
     fin.close();
-    fin.open("../res/userInfo.txt", std::ios::in);
-    std::string buffer;
-    fin >> buffer; // 先去掉标题行
-    while(!fin.eof()) { //读取
+    fin.open(QIODevice::ReadOnly);
+    QString buffer;
+    QTextStream finRead(&fin);
+    finRead >> buffer; // 先去掉标题行
+    while(!finRead.atEnd()) { //读取
         buffer.clear();
-        fin >>  buffer;
-        if(buffer.empty()){
+        finRead >>  buffer;
+        if(buffer.isEmpty()){
             //说明是因为换行符导致进入到这一行
             break;
         }
@@ -68,258 +103,73 @@ void LoginScene::loadUserInfo() {
     fin.close();
 }
 
-
-void LoginScene::selectOpt() {
-    int ans;
-    bool isValid = false; // 退出标志
-    while(!isValid) {
-//        system("cls");
-        printf("------------------------------------------------------------\n");
-        printf("*****************************LOGIN**************************\n");
-        printf("------------------------------------------------------------\n");
-        printf("1. UserLogin 2. UserRegister 3. AdminLogin 4. exit\n");
-        printf("type a number to continue: ");
-        std::cin >> ans;
-        switch (ans) {
-            case 1:
-                this->userLogin();
-                break;
-            case 2:
-                this->userRegister();
-                break;
-            case 3:
-                this->adminLogin();
-                break;
-            case 4: // exit
-                isValid = true;
-                break;
-            default:
-                printf("error! type again!\n");
-                std::cin >> ans;
-                break;
-        }
-    }
-}
-
-void LoginScene::userLogin() {
-//    system("cls");
-    bool isValid = false;
-    int falseCnt = 0; //记录错误输入用户名/密码的次数, 达到3次自动退出登录.
-    while(!isValid) {
-        printf("------------------------------------------------------------\n");
-        printf("************************USER LOGIN**************************\n");
-        printf("------------------------------------------------------------\n");
-        printf("username: ");
-        std::string usernameBuffer;
-        std::cin >> usernameBuffer;
-        printf("password: ");
-        std::string passwordBuffer;
-        std::cin >> passwordBuffer;
-        this->curUser = this->userLoginCheck(usernameBuffer, passwordBuffer);
-        if(this->curUser != nullptr) {
-            if(this->curUser->userState == "inactive") {
-                printf("permission denied! you've been banned!\n");
-                return ;
-            }
-            printf("success!\n");
-            isValid = true;
-        }
-        else {
-            if (++falseCnt == 3) {
-                printf("you've typed wrong username/password 3 times! going to return....\n");
-                break;
-            }
-            printf("permission denied the %d time! type again\n", falseCnt);
-        }
-    }
-    if(falseCnt >= 3 && !isValid) return ;
-    //登录成功, 登录用户界面
-    this->selectUserOpt();
-}
-
-void LoginScene::userRegister() {
-//    system("cls");
-    bool isValid = false;
-    while(!isValid) {
-        printf("------------------------------------------------------------\n");
-        printf("************************USER Register***********************\n");
-        printf("------------------------------------------------------------\n");
-        // buffer
-        std::string _username;
-        std::string _password;
-        std::string _phoneNumber;
-        std::string _address;
-        printf("username: ");
-        std::cin >> _username;
-        printf("password: ");
-        std::cin >> _password;
-        printf("phoneNumber: ");
-        std::cin >> _phoneNumber;
-        printf("address: ");
-        std::cin >> _address;
-        std::string _userID = this->userRegisterCheck(_username);
-        if(!_userID.empty()) {
-            isValid = true;
-            userInfo *cur = new userInfo;
-            cur->username = _username;
-            cur->password = _password;
-            cur->userID = _userID;
-            cur->userState = "active";
-            cur->address = _address;
-            cur->balance = 0.0;
-            cur->phonenumber = _phoneNumber;
-            //将创建的userInfo添加到userInfoList;
-            if(this->idx >= USERCAPACITY) {
-                printf("error! out of capacity! going to return...\n");
-                break;
-            }
-            else {
-                printf("success!\n");
-                this->userInfoList[this->idx++] = cur;
-            }
-        }
-        else {
-            printf("error! username already used! try another name!\n");
-        }
-    }
-}
-
-void LoginScene::adminLogin() {
-//    system("cls");
-    bool isValid = false;
-    int falseCnt = 0;
-    while(!isValid) {
-        printf("------------------------------------------------------------\n");
-        printf("**************************Admin Login***********************\n");
-        printf("------------------------------------------------------------\n");
-        std::string _adminID;
-        std::string _password;
-        printf("adminID: ");
-        std::cin >> _adminID;
-        printf("password: ");
-        std::cin >> _password;
-        if(_adminID == "admin" && _password == "root") {
-            isValid = true;
-            printf("success!\n");
-        }
-        else {
-            if(++falseCnt == 3) {
-                printf("you've tried 3 times wrong answer! going to return...\n");
-                break;
-            }
-            printf("permission denied! the %d time!\n", falseCnt);
-        }
-    }
-    if(isValid) {//进入admin界面
-        printf("going to the admin scene!\n");
-        AdminCenter a(this->userInfoList, this->idx);//同样不需要手动释放
-        a.selectOpt();
-    }
-    return;
-}
-
-void LoginScene::selectUserOpt() {//1. 我是卖家 2. 我是买家 3. 个人中心 4. 返回
-    //    system("cls");
-    int ans;
-    bool isValid = false;
-    AuctionSystem auctionSystem;//注意: 由于不是动态申请, 所以不需要进行释放
-    AccountCenter a;
-    BuyerCenter b(this->curUser, &auctionSystem);
-    SellerCenter s(this->curUser, &auctionSystem);
-    a.init(this, this->curUser);
-    while(!isValid) {
-        printf("------------------------------------------------------------\n");
-        printf("****************************User Menu***********************\n");
-        printf("------------------------------------------------------------\n");
-        printf("Welcome, ");
-        std::cout << this->curUser->username << std::endl;
-        printf("1. Seller Center 2. Buyer Center 3. Account Center 4. exit\n");
-        printf("select a num: ");
-        std::cin >> ans;
-        switch (ans) {
-            case 1:
-                printf("going to the Seller Center...\n");
-                //调用卖家模块
-                s.selectOpt();
-                break;
-            case 2:
-                printf("going to the Buyer Center...\n");
-                //调用买家模块
-                b.selectOpt();
-                break;
-            case 3:
-                printf("going to the Account Center...\n");
-                a.selectOpt();
-                //调用个人中心模块
-                break;
-            case 4://return
-                this->curUser = nullptr;// 清空当前用户指针
-                isValid = true;
-                break;
-            default:
-                printf("error! type again!\n");
-                std::cin >> ans;
-                break;
-        }
-    }
-}
-
-userInfo* LoginScene::createUser(std::string &buffer) {
-    if(buffer.empty()) {
+userInfo* LoginScene::createUser(QString &buffer) {
+    if(buffer.isEmpty()) {
         printf("error! no input!\n");
         return nullptr;
     }
     //create a new userInfo struct
     userInfo * cur = new userInfo;
     //split
-    int l = 0, r = 0;//双指针
-    //userID,
-    while(buffer[++r] != ',') {}
-    cur->userID = buffer.substr(l, r-l);
-    l = r+1;
-    //username,
-    while(buffer[++r] != ',') {}
-    cur->username = buffer.substr(l, r-l);
-    l = r+1;
-    //password,
-    while(buffer[++r] != ',') {}
-    cur->password = buffer.substr(l, r-l);
-    l = r+1;
-    //phonenumber,
-    while(buffer[++r] != ',') {}
-    cur->phonenumber = buffer.substr(l, r-l);
-    l= r+1;
-    //address,
-    while(buffer[++r] != ',') {}
-    cur->address = buffer.substr(l, r-l);
-    l = r+1;
-    //balance,
-    while(buffer[++r] != ',') {}
-    cur->balance = atof(buffer.substr(l, r-l).c_str());
-    l = r+1;
-    //userState
-    cur->userState = buffer.substr(l, buffer.length() - l);
+    QStringList list = buffer.split(",");
+    cur->userID = list[0];
+    cur->username = list[1];
+    cur->password = list[2];
+    cur->phonenumber = list[3];
+    cur->address = list[4];
+    cur->balance = list[5].toFloat();
+    cur->userState = list[6];
+    qDebug() << cur->userID << " " << cur->username << " " << cur->balance;
     return cur;
 }
 
-userInfo* LoginScene::userLoginCheck(const std::string& username, const std::string& password) {
-    for(int i = 0; i < this->idx; i++) {
-        if(username == this->userInfoList[i]->username && password == this->userInfoList[i]->password) {
-            return this->userInfoList[i];
-        }
+void LoginScene::userRegister()
+{
+    QString username = ui->lineEdit_registName->text();
+    QString password = ui->lineEdit_registPwd->text();
+    QString phoneNumber = ui->lineEdit_registPhoneNumber->text();
+    QString address = ui->lineEdit_registAddress->text();
+    QString userID = this->userRegisterCheck(username);
+    if(userID.isEmpty()) {
+        QMessageBox::critical(this, "注册失败", "用户名已存在!");
+        ui->lineEdit_registName->clear();
+        ui->lineEdit_registPwd->clear();
+        ui->lineEdit_registPhoneNumber->clear();
+        ui->lineEdit_registAddress->clear();
+        return ;
     }
-    return nullptr;
+    if(this->idx >= USERCAPACITY) {
+        QMessageBox::critical(this, "注册失败", "超出注册用户上限!");
+        ui->lineEdit_registName->clear();
+        ui->lineEdit_registPwd->clear();
+        ui->lineEdit_registPhoneNumber->clear();
+        ui->lineEdit_registAddress->clear();
+        return ;
+    }
+    else {
+        QMessageBox::information(this, "注册成功", "恭喜你, 注册成功!");
+        userInfo *cur = new userInfo;
+        cur->userID = userID;
+        cur->username = username;
+        cur->password = password;
+        cur->phonenumber = phoneNumber;
+        cur->address = address;
+        cur->balance = 0.0;
+        cur->userState = "active";
+        this->userInfoList[this->idx++] = cur;
+    }
 }
 
-std::string LoginScene::userRegisterCheck(const std::string& username) {
-    std::string ret;
+QString LoginScene::userRegisterCheck(const QString &username)
+{
+    QString ret;
     for(int i = 0; i < this->idx; i++) {
         if(username == this->userInfoList[i]->username) {
             return ret;
         }
     }
     //说明不重复, 指派一个userID
-    std::string num = std::to_string(this->idx+1);
+    QString num = QString::number(this->idx+1);
     if(num.length() == 1) {
         ret += "U00";
     }
@@ -332,3 +182,56 @@ std::string LoginScene::userRegisterCheck(const std::string& username) {
     ret += num;
     return ret;
 }
+
+void LoginScene::userLogin()
+{
+    QString username = ui->lineEdit_username->text();
+    QString password = ui->lineEdit_userpwd->text();
+    this->curUser = this->userLoginCheck(username, password);
+    if(this->curUser != nullptr) {
+        if(this->curUser->userState == "inactive") {
+            QMessageBox::warning(this, "登录失败", "对不起, 您已被封禁!");
+            ui->lineEdit_username->clear();
+            ui->lineEdit_userpwd->clear();
+            return ;
+        }
+        QMessageBox::about(this, "登录成功", "恭喜你, 登录成功!");
+        qDebug() << "进入用户界面";
+        UserCenter *usercenter = new UserCenter(this, this->curUser, this->auctionSystem);
+        usercenter->show();
+//        this->hide();
+    }
+    else {
+        QMessageBox::warning(this, "登录失败", "用户账号/密码错误!");
+    }
+    ui->lineEdit_username->clear();
+    ui->lineEdit_userpwd->clear();
+}
+
+userInfo *LoginScene::userLoginCheck(const QString &username, const QString &password)
+{
+    for(int i = 0; i < this->idx; i++) {
+        if(username == this->userInfoList[i]->username && password == this->userInfoList[i]->password) {
+            return this->userInfoList[i];
+        }
+    }
+    return nullptr;
+}
+
+void LoginScene::adminLogin()
+{
+    QString adminID = ui->lineEdit_adminName->text();
+    QString adminPwd = ui->lineEdit_adminPwd->text();
+    if(adminID == "admin" && adminPwd == "root") {
+        QMessageBox::about(this, "管理员登录", "登录成功!");
+        qDebug() << "进入管理员中心";
+        AdminCenter *adminCenter = new AdminCenter(nullptr, this->auctionSystem);
+        adminCenter->show();
+    }
+    else {
+        QMessageBox::warning(this, "管理员登录", "管理员账号/密码输入错误!");
+    }
+    ui->lineEdit_adminName->clear();
+    ui->lineEdit_adminPwd->clear();
+}
+

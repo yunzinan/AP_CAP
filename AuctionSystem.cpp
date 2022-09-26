@@ -1,38 +1,47 @@
-//
-// Created by Jack_shen on 2022/9/12.
-//
+#include "auctionsystem.h"
+#include <QDir>
+#include <QFile>
+#include <QTextStream>
+#include <QDebug>
 
-#include <iostream>
-#include <fstream>
-#include <iomanip>
-#include "AuctionSystem.h"
+AuctionSystem::AuctionSystem(userInfo **userInfoList, int userIdx)
+{
+    this->userIdx = userIdx;
+    this->userInfoList = userInfoList;
+    this->loadOrderInfo();
+    this->loadCommodityInfo();
+    this->_myTimer = new myTimer;
+}
 
-
-void AuctionSystem::loadCommodityInfo() {
-    //写文件
-    std::fstream fin;
-    fin.open("../res/commodityInfo.txt", std::ios::in);
-    if(!fin) {
-        printf("commodityInfo file not exists!\n");
-        std::fstream fout;
-        fout.open("../res/commodityInfo.txt", std::ios::out);
-        std::string head = "commodityID,commodityName,floorPrice,number,description,sellerID,addedDate,state";
-        fout << head << std::endl;
+void AuctionSystem::loadCommodityInfo()
+{
+    qDebug() << QDir::currentPath();
+    QString filePath = QDir::currentPath() + "/res/commodityInfo.txt";//文件路径
+    QFile fin(filePath);
+    if (!fin.open(QIODevice::ReadOnly)) {
+        qDebug() << "file not exists!";
+        QFile fout(filePath);
+        fout.open(QIODevice::WriteOnly);
+        QTextStream foutWrite(&fout);
+        QString head = "commodityID,commodityName,floorPrice,number,description,sellerID,addedDate,state";
+        foutWrite << head << endl;
         fout.close();
     }
     fin.close();
-    fin.open("../res/commodityInfo.txt", std::ios::in);
-    std::string buffer;
-    fin >> buffer; //先去掉标题行
-    while(!fin.eof()) {
+    fin.open(QIODevice::ReadOnly);
+    QString buffer;
+    QTextStream finRead(&fin);
+    finRead >> buffer; // 先去掉标题行
+    while(!finRead.atEnd()) { //读取
         buffer.clear();
-        fin >> buffer;
-        if(buffer.empty()) {
+        finRead >>  buffer;
+        if(buffer.isEmpty()){
+            //说明是因为换行符导致进入到这一行
             break;
         }
         if(this->commodityIdx >= COMMODITYCAPACITY) {
-            printf("out of capacity!\n");
-        }
+            qDebug() << "out of capacity!";
+         }
         else {
             this->commodityInfoList[this->commodityIdx++] = this->createCommodity(buffer);
         }
@@ -40,106 +49,230 @@ void AuctionSystem::loadCommodityInfo() {
     fin.close();
 }
 
-AuctionSystem::AuctionSystem() {
-    //获取当前时间
-    time_t now = time(0);
-    this->ltm = localtime(&now);
-    this->_myTimer = new myTimer;
-    _myTimer->year = 1900 + ltm->tm_year;
-    _myTimer->month = 1 + ltm->tm_mon;
-    _myTimer->day = ltm->tm_mday;
-    _myTimer->hour = ltm->tm_hour;
-    _myTimer->min = ltm->tm_min;
-    _myTimer->sec = ltm->tm_sec;
-    this->loadCommodityInfo();
-    this->loadOrderInfo();
+void AuctionSystem::loadOrderInfo()
+{
+    qDebug() << QDir::currentPath();
+    QString filePath = QDir::currentPath() + "/res/orderInfo.txt";//文件路径
+    QFile fin(filePath);
+    if (!fin.open(QIODevice::ReadOnly)) {
+        qDebug() << "file not exists!";
+        QFile fout(filePath);
+        fout.open(QIODevice::WriteOnly);
+        QTextStream foutWrite(&fout);
+        QString head = "orderID,commodityID,sellerID,buyerID,bidTime,bidPrice,state";
+        foutWrite << head << endl;
+        fout.close();
+    }
+    fin.close();
+    fin.open(QIODevice::ReadOnly);
+    QString buffer;
+    QTextStream finRead(&fin);
+    finRead >> buffer; // 先去掉标题行
+    while(!finRead.atEnd()) { //读取
+        buffer.clear();
+        finRead >>  buffer;
+        if(buffer.isEmpty()){
+            //说明是因为换行符导致进入到这一行
+            break;
+        }
+        if(this->commodityIdx >= COMMODITYCAPACITY) {
+            qDebug() << "out of capacity!";
+         }
+        else {
+            this->orderInfoList[this->orderIdx++] = this->createOrder(buffer);
+        }
+    }
+    fin.close();
 }
 
-commodityInfo *AuctionSystem::createCommodity(std::string &buffer) {
-    if(buffer.empty()) {
-        printf("error! no input!\n");
+commodityInfo *AuctionSystem::createCommodity(const QString &buffer)
+{
+    if(buffer.isEmpty()) {
+        qDebug() << "error! no input!";
         return nullptr;
     }
-    //create a new commodityInfo struct
-    commodityInfo * cur = new commodityInfo;
-    //split
-    int l = 0, r = 0;
-    //commodityID
-    while(buffer[++r] != ',') {}
-    cur->commodityID = buffer.substr(l, r-l);
-    l = r+1;
-    //commodityName
-    while(buffer[++r] != ',') {}
-    cur->commodityName = buffer.substr(l, r-l);
-    l = r+1;
-    //floorPrice
-    while(buffer[++r] != ',') {}
-    cur->floorPrice = atof(buffer.substr(l, r-l).c_str());
-    l=r+1;
-    //number
-    while(buffer[++r] != ',') {}
-    cur->number = atoi(buffer.substr(l, r-l).c_str());
-    l = r+1;
-    //description
-    while(buffer[++r] != ',') {}
-    cur->description = buffer.substr(l, r-l);
-    l = r+1;
-    //sellerID
-    while(buffer[++r] != ',') {}
-    cur->sellerID = buffer.substr(l, r-l);
-    l = r+1;
-    //addedDate
-    while(buffer[++r] != ',') {}
-    cur->addedDate = buffer.substr(l, r-l);
-    l = r+1;
-    //state
-    cur->state = buffer.substr(l, buffer.length() - l);
+    commodityInfo* cur = new commodityInfo;
+    QStringList list = buffer.split(",");
+    cur->commodityID = list[0];
+    cur->commodityName = list[1];
+    cur->floorPrice = list[2].toFloat();
+    cur->number = list[3].toInt();
+    cur->description = list[4];
+    cur->sellerID = list[5];
+    cur->addedDate = list[6];
+    cur->state = list[7];
+    qDebug() << cur->commodityName << " " << cur->state;
     return cur;
 }
 
-AuctionSystem::~AuctionSystem() {
-    //写文件
-    std::fstream fout;
-    fout.open("../res/commodityInfo.txt", std::ios::out | std::ios::trunc);
-    // 释放内存, 写入文件: commodityInfo.txt
-    fout << "commodityID,commodityName,floorPrice,number,description,sellerID,addedDate,state" << std::endl;
+orderInfo *AuctionSystem::createOrder(const QString &buffer)
+{
+    if(buffer.isEmpty()) {
+        qDebug() << "error! no input!";
+        return nullptr;
+    }
+    orderInfo* cur = new orderInfo;
+    QStringList list = buffer.split(",");
+    cur->orderID = list[0];
+    cur->commodityID = list[1];
+    cur->sellerID = list[2];
+    cur->buyerID = list[3];
+    cur->bidTime = list[4];
+    cur->bidPrice = list[5].toFloat();
+    cur->state = list[6];
+    qDebug() << cur->orderID << " " << cur->state;
+    return cur;
+}
+
+AuctionSystem::~AuctionSystem()
+{
+    // 写文件
+    QString filePath = QDir::currentPath() + "/res/commodityInfo.txt";//文件路径
+    QFile fout(filePath);
+    fout.open(QIODevice::WriteOnly | QIODevice::Truncate);
+    QTextStream foutWrite(&fout);
+    foutWrite << "commodityID,commodityName,floorPrice,number,description,sellerID,addedDate,state" << endl;
     for(int i = 0; i < this->commodityIdx; i++) {
         if(commodityInfoList[i] != nullptr) {
-            fout << commodityInfoList[i]->commodityID << ",";
-            fout << commodityInfoList[i]->commodityName << ",";
-            fout << std::setiosflags(std::ios::fixed) << std::setprecision(1) << commodityInfoList[i]->floorPrice << ",";
-            fout << commodityInfoList[i]->number << ",";
-            fout << commodityInfoList[i]->description << ",";
-            fout << commodityInfoList[i]->sellerID << ",";
-            fout << commodityInfoList[i]->addedDate << ",";
-            fout << commodityInfoList[i]->state << std::endl;
+            qDebug() << "delete: " << commodityInfoList[i]->commodityID << this->commodityInfoList[i]->commodityName;
+            foutWrite << commodityInfoList[i]->commodityID << ",";
+            foutWrite << commodityInfoList[i]->commodityName << ",";
+            foutWrite << QString::number(commodityInfoList[i]->floorPrice, 'f', 1) << ",";
+            foutWrite << QString::number(commodityInfoList[i]->number) << ",";
+            foutWrite << commodityInfoList[i]->description << ",";
+            foutWrite << commodityInfoList[i]->sellerID << ",";
+            foutWrite << commodityInfoList[i]->addedDate << ",";
+            foutWrite << commodityInfoList[i]->state << endl;
+            qDebug() << commodityInfoList[i]->commodityName;
             delete commodityInfoList[i];
         }
     }
     fout.close();
-    //释放内存, 写入文件: orderInfo.txt
-    fout.open("../res/orderInfo.txt", std::ios::out | std::ios::trunc);
-    fout << "orderID,commodityID,sellerID,buyerID,bidTime,bidPrice,state" << std::endl;
+    filePath = QDir::currentPath() + "/res/orderInfo.txt";
+    QFile fout_2(filePath);
+    fout_2.open(QIODevice::WriteOnly | QIODevice::Truncate);
+    QTextStream foutWrite_2(&fout_2);
+    foutWrite_2 << "orderID,commodityID,sellerID,buyerID,bidTime,bidPrice,state" << endl;
     for(int i = 0; i < this->orderIdx; i++) {
-        fout << orderInfoList[i]->orderID << ",";
-        fout << orderInfoList[i]->commodityID << ",";
-        fout << orderInfoList[i]->sellerID << ",";
-        fout << orderInfoList[i]->buyerID << ",";
-        fout << orderInfoList[i]->bidTime << ",";
-        fout << std::setiosflags(std::ios::fixed) << std::setprecision(1) << orderInfoList[i]->bidPrice << ",";
-        fout << orderInfoList[i]->state << std::endl;
-        delete orderInfoList[i];
+        if(orderInfoList[i] != nullptr) {
+            foutWrite_2 << orderInfoList[i]->orderID << ",";
+            foutWrite_2 << orderInfoList[i]->commodityID << ",";
+            foutWrite_2 << orderInfoList[i]->sellerID << ",";
+            foutWrite_2 << orderInfoList[i]->buyerID << ",";
+            foutWrite_2 << orderInfoList[i]->bidTime << ",";
+            foutWrite_2 << QString::number(orderInfoList[i]->bidPrice, 'f', 1) << ",";
+            foutWrite_2 << orderInfoList[i]->state << endl;
+            delete orderInfoList[i];
+        }
     }
-    fout.close();
+
 }
 
-void AuctionSystem::addCommodity(commodityInfo *_commodityInfo) {
-    this->commodityInfoList[this->commodityIdx++] = _commodityInfo;
+commodityList *AuctionSystem::getCommodity_b(const QString &commodityName)
+{
+    commodityList *ret = new commodityList;
+    ret->size = 0;
+    if(commodityName.isEmpty()) {//说明要求显示所有在售的商品
+        for(int i = 0; i < this->commodityIdx; i++) {
+            qDebug() << this->commodityInfoList[i]->state;
+            if(this->commodityInfoList[i]->state == "onAuction") {
+                ret->list[ret->size++] = commodityInfoList[i];
+            }
+        }
+    }
+    else {
+        for(int i = 0; i < this->commodityIdx; i++) {
+            if(this->commodityInfoList[i]->commodityName == commodityName && this->commodityInfoList[i]->state == "onAuction") {
+                ret->list[ret->size++] = commodityInfoList[i];
+            }
+        }
+    }
+    return ret;
 }
 
-std::string AuctionSystem::addCommodityCheck(std::string commodityName) {
-    std::string ret;
-    std::string num = std::to_string(this->commodityIdx+1);
+commodityList *AuctionSystem::getCommodity_s(const QString &commodityName, const QString &sellerID)
+{
+    commodityList *ret = new commodityList;
+    ret->size = 0;
+    if(commodityName.isEmpty()) {//说明要求显示所有在售的商品
+        for(int i = 0; i < this->commodityIdx; i++) {
+//            qDebug() << this->commodityInfoList[i]->state;
+            if(this->commodityInfoList[i]->sellerID == sellerID) {
+                ret->list[ret->size++] = commodityInfoList[i];
+            }
+        }
+    }
+    else {
+        for(int i = 0; i < this->commodityIdx; i++) {
+            if(this->commodityInfoList[i]->commodityName == commodityName && this->commodityInfoList[i]->sellerID == sellerID) {
+                ret->list[ret->size++] = commodityInfoList[i];
+            }
+        }
+    }
+    return ret;
+}
+
+commodityList *AuctionSystem::getCommodity_a(const QString &commodityName)
+{
+    auto *ret = new commodityList;
+    ret->size = 0;
+    if(commodityName.isEmpty()) {
+        for(int i = 0; i < this->commodityIdx; i++) {
+            ret->list[ret->size++] = commodityInfoList[i];
+        }
+        return ret;
+    }
+    else {
+        for(int i = 0; i < commodityIdx; i++) {
+            if(this->commodityInfoList[i]->commodityName == commodityName) {
+                ret->list[ret->size++] = commodityInfoList[i];
+            }
+        }
+        return ret;
+    }
+}
+
+orderList *AuctionSystem::getOrderList_b(const QString &buyerID)
+{
+    auto *ret = new orderList;
+    ret->size = 0;
+    for(int i = 0; i < this->orderIdx; i++) {
+        if(this->orderInfoList[i]->buyerID == buyerID) {
+            ret->list[ret->size++] = orderInfoList[i];
+        }
+    }
+    return ret;
+}
+
+orderList *AuctionSystem::getOrderList_s(const QString &sellerID)
+{
+    auto *ret = new orderList;
+    ret->size = 0;
+    for(int i = 0; i < this->orderIdx; i++) {
+        if(this->orderInfoList[i]->sellerID == sellerID) {
+            ret->list[ret->size++] = orderInfoList[i];
+        }
+    }
+    return ret;
+}
+
+orderList *AuctionSystem::getOrderList_a()
+{
+    auto *ret = new orderList;
+    ret->size = 0;
+    for(int i = 0; i < this->orderIdx; i++) {
+        ret->list[ret->size++] = orderInfoList[i];
+    }
+    return ret;
+}
+
+QString AuctionSystem::addCommoditycheck()
+{
+    QString ret = "";
+    if(this->commodityIdx >= COMMODITYCAPACITY) {
+        return ret;
+    }
+    QString num = QString::number(this->commodityIdx+1);
     if(num.length() == 1) {
         ret += "M00";
     }
@@ -153,147 +286,14 @@ std::string AuctionSystem::addCommodityCheck(std::string commodityName) {
     return ret;
 }
 
-void AuctionSystem::showCommodityList(std::string _sellerID) {
-    printf("------------------------------------------------------------\n");
-    printf("***********************Commodity List***********************\n");
-    printf("------------------------------------------------------------\n");
-    printf("ID Name FloorPrice Number AddedDate State\n");
-    for(int i = 0; i < this->commodityIdx; i++) {
-        if(this->commodityInfoList[i]->sellerID == _sellerID) {
-            std::cout << this->commodityInfoList[i]->commodityID << " "
-                    << this->commodityInfoList[i]->commodityName << " "
-                    << std::setiosflags(std::ios::fixed) << std::setprecision(1) << this->commodityInfoList[i]->floorPrice << " "
-                    << this->commodityInfoList[i]->number << " "
-                    << this->commodityInfoList[i]->addedDate << " "
-                    << this->commodityInfoList[i]->state << std::endl;
-        }
-    }
+void AuctionSystem::addCommodity(commodityInfo *cur)
+{
+    this->commodityInfoList[this->commodityIdx++] = cur;
 }
 
-void AuctionSystem::showCommodityList() {
-    printf("------------------------------------------------------------\n");
-    printf("***********************Commodity List***********************\n");
-    printf("------------------------------------------------------------\n");
-    printf("ID Name FloorPrice Number AddedDate State\n");
-    for(int i = 0; i < this->commodityIdx; i++) {
-        if(this->commodityInfoList[i]->state == "onAuction") {
-            std::cout << this->commodityInfoList[i]->commodityID << " "
-                      << this->commodityInfoList[i]->commodityName << " "
-                      << std::setiosflags(std::ios::fixed) << std::setprecision(1) << this->commodityInfoList[i]->floorPrice << " "
-                      << this->commodityInfoList[i]->number << " "
-                      << this->commodityInfoList[i]->addedDate << " "
-                      << this->commodityInfoList[i]->state << std::endl;
-        }
-    }
-}
-
-commodityInfo *AuctionSystem::findCommodity(std::string _commodityID) {
-    for(int i = 0; i < this->commodityIdx; i++) {
-        if(this->commodityInfoList[i]->commodityID == _commodityID) {
-            return this->commodityInfoList[i];
-        }
-    }
-    return nullptr;
-}
-
-commodityInfo *AuctionSystem::findCommodity(std::string _commodityID, std::string _sellerID) {
-    for(int i = 0; i < this->commodityIdx; i++) {
-        if(this->commodityInfoList[i]->commodityID == _commodityID && this->commodityInfoList[i]->sellerID == _sellerID) {
-            return this->commodityInfoList[i];
-        }
-    }
-    return nullptr;
-}
-
-void AuctionSystem::searchCommodity(std::string _commodityName) {
-    printf("------------------------------------------------------------\n");
-    printf("************************Search Result***********************\n");
-    printf("------------------------------------------------------------\n");
-    printf("ID Name FloorPrice Number AddedDate State\n");
-    for(int i = 0; i < this->commodityIdx; i++) {
-        if(this->commodityInfoList[i]->commodityName == _commodityName && this->commodityInfoList[i]->state == "onAuction") {
-            std::cout << this->commodityInfoList[i]->commodityID << " "
-                      << this->commodityInfoList[i]->commodityName << " "
-                      << std::setiosflags(std::ios::fixed) << std::setprecision(1) << this->commodityInfoList[i]->floorPrice << " "
-                      << this->commodityInfoList[i]->number << " "
-                      << this->commodityInfoList[i]->addedDate << " "
-                      << this->commodityInfoList[i]->state << std::endl;
-        }
-    }
-}
-
-void AuctionSystem::loadOrderInfo() {
-    //写文件
-    std::fstream fin;
-    fin.open("../res/orderInfo.txt", std::ios::in);
-    if(!fin) {
-        printf("orderInfo file not exists!\n");
-        std::fstream fout;
-        fout.open("../res/orderInfo.txt", std::ios::out | std::ios::trunc);
-        std::string head = "orderID,commodityID,sellerID,buyerID,bidTime,bidPrice,state";
-        fout << head << std::endl;
-        fout.close();
-    }
-    fin.close();
-    fin.open("../res/orderInfo.txt", std::ios::in);
-    std::string buffer;
-    fin >> buffer;
-    while(!fin.eof()) {
-        buffer.clear();
-        fin >> buffer;
-        if(buffer.empty()) {
-            break;
-        }
-        if(this->orderIdx >= ORDERCAPACITY) {
-            printf("out of capacity!\n");
-        }
-        else {
-            this->orderInfoList[this->orderIdx++] = this->createOrder(buffer);
-        }
-    }
-}
-
-orderInfo *AuctionSystem::createOrder(std::string &buffer) {
-    if(buffer.empty()) {
-        printf("error! no input!\n");
-        return nullptr;
-    }
-    //create a new orderInfo struct
-    orderInfo * cur = new orderInfo;
-    //split
-    int l = 0, r = 0;
-    //orderID
-    while(buffer[++r] != ',') {}
-    cur->orderID = buffer.substr(l, r-l);
-    l = r+1;
-    //commodityID
-    while(buffer[++r] != ',') {}
-    cur->commodityID = buffer.substr(l, r-l);
-    l = r+1;
-    //sellerID
-    while(buffer[++r] != ',') {}
-    cur->sellerID = buffer.substr(l, r-l);
-    l = r+1;
-    //buyerID
-    while(buffer[++r] != ',') {}
-    cur->buyerID = buffer.substr(l, r-l);
-    l = r+1;
-    //bidTime
-    while(buffer[++r] != ',') {}
-    cur->bidTime = buffer.substr(l, r-l);
-    l = r+1;
-    //bidPrice
-    while(buffer[++r] != ',') {}
-    cur->bidPrice = atof(buffer.substr(l, r-l).c_str());
-    l = r+1;
-    //state
-    cur->state = buffer.substr(l, buffer.length() - l);
-    return cur;
-}
-
-bool AuctionSystem::bidCheck(std::string _buyerID, std::string _commodityID) {
+bool AuctionSystem::bidCheck(const QString &buyerID, const QString &commodityID) {
     for(int i = 0; i < this->orderIdx; i++) {
-        if(this->orderInfoList[i]->buyerID == _buyerID && this->orderInfoList[i]->commodityID == _commodityID
+        if(this->orderInfoList[i]->buyerID == buyerID && this->orderInfoList[i]->commodityID == commodityID
             && this->orderInfoList[i]->state == "inProcess") {
             return false;
         }
@@ -301,10 +301,11 @@ bool AuctionSystem::bidCheck(std::string _buyerID, std::string _commodityID) {
     return true;
 }
 
-void AuctionSystem::addOrder(std::string commodityID, std::string sellerID, std::string buyerID, float bidPrice) {
+void AuctionSystem::addOrder(const QString &commodityID, const QString &sellerID, const QString &buyerID, float bidPrice)
+{
     //get orderID
-    std::string orderID;
-    std::string num = std::to_string(this->orderIdx+1);
+    QString orderID;
+    QString num = QString::number(this->orderIdx+1);
     if(num.length() == 1) {
         orderID += "T00";
     }
@@ -326,18 +327,16 @@ void AuctionSystem::addOrder(std::string commodityID, std::string sellerID, std:
     this->orderInfoList[this->orderIdx++] = cur;
 }
 
-std::string AuctionSystem::generateTime() {
-    //获取当前时间
+QString AuctionSystem::generateTime()
+{
     time_t now = time(0);
     this->ltm = localtime(&now);
-    this->_myTimer = new myTimer;
     _myTimer->year = 1900 + ltm->tm_year;
     _myTimer->month = 1 + ltm->tm_mon;
     _myTimer->day = ltm->tm_mday;
     _myTimer->hour = ltm->tm_hour;
     _myTimer->min = ltm->tm_min;
     _myTimer->sec = ltm->tm_sec;
-
     std::string timeStr;
     timeStr += std::to_string(this->_myTimer->year);
 
@@ -375,82 +374,40 @@ std::string AuctionSystem::generateTime() {
         timeStr += "0";
     }
     timeStr += std::to_string(this->_myTimer->sec);
-    return timeStr;
+    return QString::fromStdString(timeStr);
 }
 
-void AuctionSystem::viewOrderList(std::string buyerID) {
-    printf("------------------------------------------------------------\n");
-    printf("**************************Order List************************\n");
-    printf("------------------------------------------------------------\n");
-    printf("OrderID CommodityID SellerID BuyerID BidTime BidPrice State\n");
-    for(int i = 0; i < this->orderIdx; i++) {
-        if(this->orderInfoList[i]->buyerID == buyerID) {
-            std::cout << this->orderInfoList[i]->orderID << " "
-                    << this->orderInfoList[i]->commodityID << " "
-                    << this->orderInfoList[i]->sellerID << " "
-                    << this->orderInfoList[i]->buyerID << " "
-                    << this->orderInfoList[i]->bidTime << " "
-                    << std::setiosflags(std::ios::fixed) << std::setprecision(1) << this->orderInfoList[i]->bidPrice << " "
-                    << this->orderInfoList[i]->state << std::endl;
-        }
-    }
-}
-
-void AuctionSystem::viewOrderList_S(std::string sellerID) {
-    printf("------------------------------------------------------------\n");
-    printf("**************************Order List************************\n");
-    printf("------------------------------------------------------------\n");
-    printf("OrderID CommodityID SellerID BuyerID BidTime BidPrice State\n");
-    for(int i = 0; i < this->orderIdx; i++) {
-        if(this->orderInfoList[i]->sellerID == sellerID) {
-            std::cout << this->orderInfoList[i]->orderID << " "
-                      << this->orderInfoList[i]->commodityID << " "
-                      << this->orderInfoList[i]->sellerID << " "
-                      << this->orderInfoList[i]->buyerID << " "
-                      << this->orderInfoList[i]->bidTime << " "
-                      << std::setiosflags(std::ios::fixed) << std::setprecision(1) << this->orderInfoList[i]->bidPrice << " "
-                      << this->orderInfoList[i]->state << std::endl;
-        }
-    }
-}
-
-void AuctionSystem::showCommodityListAll() {
-    printf("------------------------------------------------------------\n");
-    printf("***********************Commodity List***********************\n");
-    printf("------------------------------------------------------------\n");
-    printf("ID Name FloorPrice Number AddedDate State\n");
+commodityInfo *AuctionSystem::getCommodity(const QString &commodityID)
+{
     for(int i = 0; i < this->commodityIdx; i++) {
-        std::cout << this->commodityInfoList[i]->commodityID << " "
-                  << this->commodityInfoList[i]->commodityName << " "
-                  << std::setiosflags(std::ios::fixed) << std::setprecision(1) << this->commodityInfoList[i]->floorPrice << " "
-                  << this->commodityInfoList[i]->number << " "
-                  << this->commodityInfoList[i]->addedDate << " "
-                  << this->commodityInfoList[i]->state << std::endl;
+        if(this->commodityInfoList[i]->commodityID == commodityID) return commodityInfoList[i];
     }
+    return nullptr;
 }
 
-void AuctionSystem::viewOrderList() {
-    printf("------------------------------------------------------------\n");
-    printf("**************************Order List************************\n");
-    printf("------------------------------------------------------------\n");
-    printf("OrderID CommodityID SellerID BuyerID BidTime BidPrice State\n");
-    for(int i = 0; i < this->orderIdx; i++) {
-        std::cout << this->orderInfoList[i]->orderID << " "
-                  << this->orderInfoList[i]->commodityID << " "
-                  << this->orderInfoList[i]->sellerID << " "
-                  << this->orderInfoList[i]->buyerID << " "
-                  << this->orderInfoList[i]->bidTime << " "
-                  << std::setiosflags(std::ios::fixed) << std::setprecision(1) << this->orderInfoList[i]->bidPrice << " "
-                  << this->orderInfoList[i]->state << std::endl;
+userList *AuctionSystem::getUserList(const QString &username)
+{
+    auto *ret = new userList;
+    ret->size = 0;
+    if(username.isEmpty()) {
+        for(int i = 0; i < this->userIdx; i++){
+            ret->list[ret->size++] = this->userInfoList[i];
         }
+    }
+    else {
+        for(int i = 0; i < this->userIdx; i++) {
+            if(this->userInfoList[i]->username == username) {
+                ret->list[ret->size++] = this->userInfoList[i];
+            }
+        }
+    }
+    return ret;
 }
 
-void AuctionSystem::setUserInfo(userInfo **_userInfoList, int _idx) {
-    this->userInfoList = _userInfoList;
-    this->userIdx = _idx;
-}
-
-void AuctionSystem::calcResult() {
+orderList* AuctionSystem::calcResult()
+{
+    auto *ret = new orderList;
+    ret->size = 0;
     //clear:避免未释放对象前再次调用该函数, 此时已经存了上一次的node
     for(int i = 0; i < this->commodityIdx; i++) {
         this->vector[i].clear();
@@ -463,6 +420,7 @@ void AuctionSystem::calcResult() {
     for(int i = 0; i < this->orderIdx; i++) {
         if(this->orderInfoList[i]->state == "inProcess") {
             this->vector[ID2int(orderInfoList[i]->commodityID)].addNode(orderInfoList[i], userInfoList[ID2int(orderInfoList[i]->buyerID)]);
+            ret->list[ret->size++] = orderInfoList[i];
         }
     }
     //rank & update
@@ -471,12 +429,9 @@ void AuctionSystem::calcResult() {
         vector[i].rank();
         vector[i].update();
     }
-
+    return ret;
 }
 
-int AuctionSystem::ID2int(std::string &str) { // "M001"->0
-    return atoi(str.substr(1, 3).c_str()) - 1;
+int AuctionSystem::ID2int(const QString &str) { // "M001"->0
+    return str.mid(1, 3).toInt() - 1;
 }
-
-
-

@@ -1,3 +1,0 @@
-C:/Users/Jack_shen/Desktop/CAP/cmake-build-debug/CMakeFiles/CAP.dir
-C:/Users/Jack_shen/Desktop/CAP/cmake-build-debug/CMakeFiles/edit_cache.dir
-C:/Users/Jack_shen/Desktop/CAP/cmake-build-debug/CMakeFiles/rebuild_cache.dir

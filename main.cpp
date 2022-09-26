@@ -1,10 +1,11 @@
-#include "LoginScene.h"
-#include "windows.h"
+#include "loginscene.h"
 
-int main() {
-    system("mode con cols=100 lines=40");
-//    system("color 13");
-    LoginScene l; //程序的入口
-    system("pause");
-    return 0;
+#include <QApplication>
+
+int main(int argc, char *argv[])
+{
+    QApplication a(argc, argv);
+    LoginScene w;
+    w.show();
+    return a.exec();
 }

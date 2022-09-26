@@ -1,30 +1,12 @@
-//
-// Created by Jack_shen on 2022/9/12.
-//
+#ifndef AUCTIONSYSTEM_H
+#define AUCTIONSYSTEM_H
 
-#ifndef CAP_AUCTIONSYSTEM_H
-#define CAP_AUCTIONSYSTEM_H
-
-#include <cstdio>
-#include <string>
-#include <ctime>
-#include "LoginScene.h"
 #include "config.h"
-#include "MyVector.h"
+#include "myvector.h"
+#include <time.h>
 
-#define COMMODITYCAPACITY 20
-#define ORDERCAPACITY 50
-
-typedef struct myTimer{
-    int year;
-    int month;
-    int day;
-    int hour;
-    int min;
-    int sec;
-}myTimer;
-
-class AuctionSystem {
+class AuctionSystem
+{
     commodityInfo *commodityInfoList[COMMODITYCAPACITY];
     orderInfo *orderInfoList[ORDERCAPACITY];
     userInfo **userInfoList;
@@ -35,30 +17,27 @@ class AuctionSystem {
     myTimer *_myTimer;
     MyVector vector[COMMODITYCAPACITY];
 public:
-    AuctionSystem();
-    void setUserInfo(userInfo **_userInfoList, int _idx);
-    void loadCommodityInfo();//初始化, 将commodityInfo.txt信息写入
+    AuctionSystem(userInfo **userInfoList, int userIdx);
+    void loadCommodityInfo();
     void loadOrderInfo();
-    commodityInfo *createCommodity(std::string &buffer); //根据string信息创建商品对象(初始化
-    orderInfo *createOrder(std::string &buffer);
-    void addCommodity(commodityInfo *_commodityInfo);//添加新的商品
-    void addOrder(std::string commodityID, std::string sellerID, std::string buyerID, float bidPrice);
-    std::string addCommodityCheck(std::string commodityName); // 主要是创造commodityID返回, 因为不同商家可以起相同的名字.
-    commodityInfo * findCommodity(std::string _commodityID); // 买家&管理员功能: 根据商品ID查找对应的商品指针
-    commodityInfo * findCommodity(std::string _commodityID, std::string _sellerID); //卖家功能: 查找某个用户的商家商品
-    void searchCommodity(std::string _commodityName); //买家功能: 完全匹配, 理论上讲应该要传值回去而不是在这里显示的.
-    void showCommodityList(std::string _sellerID);// 卖家功能: 只展示属于卖家的商品
-    void showCommodityList(); //买家功能, 展示所有在售的商品
-    void showCommodityListAll(); //管理员功能, 显示所有的商品
+    commodityInfo* createCommodity(const QString &buffer);
+    orderInfo* createOrder(const QString &buffer);
     ~AuctionSystem();
-    bool bidCheck(std::string _buyerID, std::string _commodityID); //检查这个买家是否之前已经有状态为"inProcess"的订单
-    std::string generateTime(); //返回yyyy-mm-dd-hh:mm:ss的字符串
-    void viewOrderList(std::string buyerID); //买家功能, 查看属于该买家的订单
-    void viewOrderList_S(std::string sellerID); //卖家功能, 查看属于该卖家的订单
-    void viewOrderList(); //管理员功能, 展示所有订单
-    void calcResult(); //核心功能, 计算结果
-    int ID2int(std::string &str);
+    commodityList* getCommodity_b(const QString &commodityName);
+    commodityList* getCommodity_s(const QString &commodityName, const QString &sellerID);
+    commodityList* getCommodity_a(const QString &commodityName); //返回所有的商品
+    orderList* getOrderList_b(const QString &buyerID);
+    orderList* getOrderList_s(const QString &sellerID);
+    orderList* getOrderList_a(); //返回所有的订单
+    QString addCommoditycheck(); //先判断是否能够继续添加新商品
+    void addCommodity(commodityInfo *cur);
+    bool bidCheck(const QString &buyerID, const QString &commodityID);
+    void addOrder(const QString &commodityID, const QString &sellerID, const QString &buyerID, float bidPrice);
+    QString generateTime(); //添加订单时使用
+    commodityInfo* getCommodity(const QString& commodityID); //竞拍时候用
+    userList* getUserList(const QString &username); //管理员功能
+    orderList* calcResult();//核心功能
+    int ID2int(const QString &str);
 };
 
-
-#endif //CAP_AUCTIONSYSTEM_H
+#endif // AUCTIONSYSTEM_H
