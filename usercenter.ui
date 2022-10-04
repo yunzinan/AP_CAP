@@ -18,7 +18,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>2</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="BuyerCenter">
        <attribute name="title">
@@ -176,7 +176,7 @@
         <item>
          <widget class="QTabWidget" name="tabWidget_3">
           <property name="currentIndex">
-           <number>0</number>
+           <number>2</number>
           </property>
           <widget class="QWidget" name="tab_6">
            <attribute name="title">
@@ -327,45 +327,21 @@
             <item>
              <widget class="QWidget" name="widget_3" native="true">
               <layout class="QGridLayout" name="gridLayout_2">
-               <item row="4" column="1">
-                <widget class="QLabel" name="label_11">
-                 <property name="text">
-                  <string>商品底价:</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="0" column="2">
-                <widget class="QLineEdit" name="lineEdit_commodityName"/>
-               </item>
-               <item row="5" column="2">
+               <item row="6" column="2">
                 <widget class="QLineEdit" name="lineEdit_number"/>
                </item>
-               <item row="0" column="1">
-                <widget class="QLabel" name="label_9">
-                 <property name="text">
-                  <string>商品名:</string>
+               <item row="2" column="3">
+                <spacer name="horizontalSpacer_2">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
                  </property>
-                </widget>
-               </item>
-               <item row="5" column="1">
-                <widget class="QLabel" name="label_12">
-                 <property name="text">
-                  <string>商品数量: </string>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>40</width>
+                   <height>20</height>
+                  </size>
                  </property>
-                </widget>
-               </item>
-               <item row="4" column="2">
-                <widget class="QLineEdit" name="lineEdit_floorPrice"/>
-               </item>
-               <item row="2" column="2">
-                <widget class="QLineEdit" name="lineEdit_Description"/>
-               </item>
-               <item row="2" column="1">
-                <widget class="QLabel" name="label_10">
-                 <property name="text">
-                  <string>商品简介: </string>
-                 </property>
-                </widget>
+                </spacer>
                </item>
                <item row="2" column="0">
                 <spacer name="horizontalSpacer">
@@ -380,18 +356,73 @@
                  </property>
                 </spacer>
                </item>
-               <item row="2" column="3">
-                <spacer name="horizontalSpacer_2">
-                 <property name="orientation">
-                  <enum>Qt::Horizontal</enum>
+               <item row="3" column="2">
+                <widget class="QLabel" name="label_dscrptCheck">
+                 <property name="text">
+                  <string>不超过200个英文字符</string>
                  </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>40</width>
-                   <height>20</height>
-                  </size>
+                </widget>
+               </item>
+               <item row="4" column="1">
+                <widget class="QLabel" name="label_11">
+                 <property name="text">
+                  <string>商品底价:</string>
                  </property>
-                </spacer>
+                </widget>
+               </item>
+               <item row="6" column="1">
+                <widget class="QLabel" name="label_12">
+                 <property name="text">
+                  <string>商品数量: </string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="2">
+                <widget class="QLineEdit" name="lineEdit_commodityName"/>
+               </item>
+               <item row="4" column="2">
+                <widget class="QLineEdit" name="lineEdit_floorPrice"/>
+               </item>
+               <item row="2" column="2">
+                <widget class="QLineEdit" name="lineEdit_Description"/>
+               </item>
+               <item row="5" column="2">
+                <widget class="QLabel" name="label_floorPriceCheck">
+                 <property name="text">
+                  <string>精确到小数点后1位</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <widget class="QLabel" name="label_9">
+                 <property name="text">
+                  <string>商品名:</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="1">
+                <widget class="QLabel" name="label_10">
+                 <property name="text">
+                  <string>商品简介: </string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="2">
+                <widget class="QLabel" name="label_nameCheck">
+                 <property name="inputMethodHints">
+                  <set>Qt::ImhNone</set>
+                 </property>
+                 <property name="text">
+                  <string>不超过20字符</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="7" column="2">
+                <widget class="QLabel" name="numberCheck">
+                 <property name="text">
+                  <string>正整数</string>
+                 </property>
+                </widget>
                </item>
               </layout>
              </widget>

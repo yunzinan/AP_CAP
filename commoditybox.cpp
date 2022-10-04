@@ -28,12 +28,14 @@ CommodityBox::~CommodityBox()
 
 void CommodityBox::modifyCommodity()
 {
-    cur->commodityName = ui->lineEdit_name->text();
-    cur->description = ui->lineEdit_description->text();
-    if(ui->radio_onAuction->isChecked()) cur->state = "onAuction";
-    else cur->state = "removed";
-    cur->number = ui->lineEdit_number->text().toInt();
-    cur->floorPrice = ui->lineEdit_floorPrice->text().toFloat();
+    if(this->isValid()) {
+        cur->commodityName = ui->lineEdit_name->text();
+        cur->description = ui->lineEdit_description->text();
+        if(ui->radio_onAuction->isChecked()) cur->state = "onAuction";
+        else cur->state = "removed";
+        cur->number = ui->lineEdit_number->text().toInt();
+        cur->floorPrice = ui->lineEdit_floorPrice->text().toFloat();
+    }
 }
 
 void CommodityBox::showCommodity()
@@ -44,4 +46,30 @@ void CommodityBox::showCommodity()
     ui->lineEdit_number->setText(QString::number(cur->number));
     ui->lineEdit_floorPrice->setText(QString::number(cur->floorPrice, 'f', 1));
     ui->lineEdit_description->setText(cur->description);
+}
+
+bool CommodityBox::isValid()
+{
+    QString name = ui->lineEdit_name->text();
+    if(name.length() >= 20) {
+        QMessageBox::critical(this, "错误", "太长啦!");
+        return false;
+    }
+    QString description = ui->lineEdit_description->text();
+    if(description.length() >= 200) {
+        QMessageBox::critical(this, "错误", "太长啦!");
+        return false;
+    }
+    QString floorPrice = ui->lineEdit_floorPrice->text();
+    qDebug() << floorPrice;
+    if(!this->isDigitString(floorPrice)) {
+        QMessageBox::critical(this, "错误", "请输入纯数字!");
+        return false;
+    }
+    QString number = ui->lineEdit_number->text();
+    if(!this->isDigitString(number)) {
+        QMessageBox::critical(this, "错误", "请输入纯数字!");
+        return false;
+    }
+    return true;
 }

@@ -444,3 +444,11 @@ bool AuctionSystem::banUser(int idx)
     }
     return false;
 }
+
+bool AuctionSystem::UserNameCheck(QString &username)
+{
+    for(int i = 0; i < this->userIdx; i++) {
+        if(this->userInfoList[i]->username == username) return false;
+    }
+    return true;
+}

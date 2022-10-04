@@ -38,6 +38,37 @@ LoginScene::LoginScene(QWidget *parent)
     connect(ui->exitBtn_regist, &QPushButton::clicked, [=](){
         this->close();
     });
+    connect(ui->lineEdit_registName, &QLineEdit::editingFinished, [=](){
+        QString text = ui->lineEdit_registName->text();
+        if(this->auctionSystem->UserNameCheck(text)) {
+            ui->label_usernameCheck->setText(QString("恭喜你, 该用户名未被使用!"));
+        }
+        else ui->label_usernameCheck->setText(QString("该用户名已被注册!换一个名字吧"));
+    });
+    connect(ui->lineEdit_registPwd, &QLineEdit::editingFinished, [=](){
+        QString text = ui->lineEdit_registPwd->text();
+        if(text.length() > 20) {
+            ui->label_pwdCheck->setText(QString("密码太长啦!"));
+        }
+//        else if(text.indexOf()))/*regex判断密码是否只由数字和小写字母*/
+        else ui->label_pwdCheck->setText(QString("密码可用!"));
+    });
+    connect(ui->lineEdit_registPhoneNumber, &QLineEdit::editingFinished, [=](){
+        QString text = ui->lineEdit_registPhoneNumber->text();
+        if(text.length() > 20) {
+            ui->label_phoneNumberCheck->setText(QString("太长啦!"));
+        }
+//        else if(text.indexOf()))/*regex判断是否只由数字和小写字母*/
+        else ui->label_phoneNumberCheck->setText(QString("可用!"));
+    });
+    connect(ui->lineEdit_registAddress, &QLineEdit::editingFinished, [=](){
+        QString text = ui->lineEdit_registAddress->text();
+        if(text.length() > 20) {
+            ui->label_addressCheck->setText(QString("密码太长啦!"));
+        }
+//        else if(text.indexOf()))/*regex判断密码是否只由数字和小写字母*/
+        else ui->label_addressCheck->setText(QString("密码可用!"));
+    });
     //读入用户信息
     this->loadUserInfo();
     this->auctionSystem = new AuctionSystem(this->userInfoList, this->idx);
@@ -132,6 +163,14 @@ void LoginScene::userRegister()
     QString phoneNumber = ui->lineEdit_registPhoneNumber->text();
     QString address = ui->lineEdit_registAddress->text();
     QString userID = this->userRegisterCheck(username);
+    if(username.isEmpty() || password.isEmpty() || phoneNumber.isEmpty() || address.isEmpty()) {
+        QMessageBox::critical(this, "错误", "请先填写全部信息!");
+        ui->lineEdit_registName->clear();
+        ui->lineEdit_registPwd->clear();
+        ui->lineEdit_registPhoneNumber->clear();
+        ui->lineEdit_registAddress->clear();
+        return ;
+    }
     if(userID.isEmpty()) {
         QMessageBox::critical(this, "注册失败", "用户名已存在!");
         ui->lineEdit_registName->clear();

@@ -14,6 +14,11 @@ class MyMessageBox : public QWidget
     commodityInfo* cur;
     AuctionSystem * auctionSystem;
     userInfo *curUser;
+    bool isDigitString(const QString& src) {
+        const char *s = src.toUtf8().data();
+        while(*s && ((*s>='0' && *s<='9') || *s == '.'))s++;
+        return !bool(*s);
+    }
 public:
     explicit MyMessageBox(QWidget *parent, userInfo* curUser, commodityInfo* cur, AuctionSystem* auctionSystem);
     ~MyMessageBox();

@@ -39,6 +39,7 @@ public:
     orderList* calcResult();//核心功能
     int ID2int(const QString &str);
     bool banUser(int idx);
+    bool UserNameCheck(QString &username);
 };
 
 #endif // AUCTIONSYSTEM_H

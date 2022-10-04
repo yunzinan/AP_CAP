@@ -48,7 +48,10 @@ void MyMessageBox::showCommodityInfo()
 void MyMessageBox::purchase()
 {
     float bidPrice = ui->lineEdit->text().toFloat();
-    if(bidPrice < cur->floorPrice) {
+    if(!this->isDigitString(ui->lineEdit->text())) {
+        QMessageBox::critical(this, "错误", "请输入纯数字!");
+    }
+    else if(bidPrice < cur->floorPrice) {
         QMessageBox::warning(this, "错误", "出价失败, 出价金额应高于底价!");
     }
     else if(!this->auctionSystem->bidCheck(curUser->userID, cur->commodityID)) {

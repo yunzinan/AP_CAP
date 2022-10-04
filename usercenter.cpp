@@ -93,6 +93,35 @@ UserCenter::UserCenter(QWidget *parent, userInfo *curUser, AuctionSystem *auctio
         commodityBox->show();
         qDebug() << "-----show!!!!!!";
     });
+    connect(ui->lineEdit_commodityName, &QLineEdit::editingFinished, [=](){
+        QString text = ui->lineEdit_commodityName->text();
+        if(text.length() > 20) {
+            ui->label_nameCheck->setText(QString("太长啦!"));
+        }
+//        else if(text.indexOf()))/*regex判断是否只由数字和小写字母*/
+        else ui->label_nameCheck->setText(QString("可用!"));
+    });
+    connect(ui->lineEdit_Description, &QLineEdit::editingFinished, [=](){
+        QString text = ui->lineEdit_Description->text();
+        if(text.length() >= 200) {
+            ui->label_dscrptCheck->setText(QString("太长啦!"));
+        }
+        else ui->label_dscrptCheck->setText(QString("可用!"));
+    });
+    connect(ui->lineEdit_floorPrice, &QLineEdit::editingFinished, [=](){
+        QString text = ui->lineEdit_floorPrice->text();
+        if(!this->isDigitString(text)) {
+            ui->label_floorPriceCheck->setText(QString("请输入纯数字!"));
+        }
+        else ui->label_floorPriceCheck->setText(QString("可用!"));
+    });
+    connect(ui->lineEdit_number, &QLineEdit::editingFinished, [=](){
+        QString text = ui->lineEdit_number->text();
+        if(!this->isDigitString(text)) {
+            ui->numberCheck->setText(QString("请输入纯数字!"));
+        }
+        else ui->numberCheck->setText(QString("可用!"));
+    });
 }
 
 UserCenter::~UserCenter()

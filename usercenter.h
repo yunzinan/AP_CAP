@@ -34,6 +34,11 @@ private:
     void showOrderList_s(); //卖家查看: 仅查看卖家是自己的订单
     void addCommodity(); //卖家发布商品
     QString generateDate(); //卖家发布商品时间
+    bool isDigitString(const QString& src) {
+        const char *s = src.toUtf8().data();
+        while(*s && ((*s>='0' && *s<='9') || *s == '.'))s++;
+        return !bool(*s);
+    }
 };
 
 #endif // USERCENTER_H

@@ -19,7 +19,12 @@ public:
     void showCommodity();
 private:
     Ui::CommodityBox *ui;
-
+    bool isDigitString(const QString& src) {
+        const char *s = src.toUtf8().data();
+        while(*s && ((*s>='0' && *s<='9') || *s == '.'))s++;
+        return !bool(*s);
+    }
+    bool isValid();
 signals:
     void exitSignal();
 };
