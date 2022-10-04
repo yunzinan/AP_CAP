@@ -435,3 +435,12 @@ orderList* AuctionSystem::calcResult()
 int AuctionSystem::ID2int(const QString &str) { // "M001"->0
     return str.mid(1, 3).toInt() - 1;
 }
+
+bool AuctionSystem::banUser(int idx)
+{
+    if(idx >= 0 && idx < this->userIdx) {
+        this->userInfoList[idx]->userState = this->userInfoList[idx]->userState == "active" ? "inactive" : "active";
+        return true;
+    }
+    return false;
+}

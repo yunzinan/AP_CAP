@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include "auctionsystem.h"
 #include "config.h"
+#include "commoditybox.h"
 namespace Ui {
 class AdminCenter;
 }
@@ -12,6 +13,7 @@ class AdminCenter : public QMainWindow
 {
     Q_OBJECT
     AuctionSystem *auctionSystem;
+    CommodityBox *commodityBox;
 public:
     AdminCenter(QWidget *parent, AuctionSystem *auctionSystem);
     ~AdminCenter();

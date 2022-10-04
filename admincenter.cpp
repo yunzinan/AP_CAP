@@ -22,6 +22,32 @@ AdminCenter::AdminCenter(QWidget *parent, AuctionSystem *auctionSystem) :
             this->showAuctionRes(ret);
         }
     });
+    connect(ui->tabWidget, &QTabWidget::tabBarClicked, [=](int idx){
+        if(idx == 2) this->showOrderList();
+    });
+    connect(ui->tableWidget, &QTableWidget::cellDoubleClicked, [=](int row, int col){
+        qDebug() << "row: " << row << "col: " << col;
+        this->commodityBox = new CommodityBox(nullptr, this->auctionSystem->getCommodity(ui->tableWidget->item(row, 0)->text()));
+        connect(commodityBox, &CommodityBox::exitSignal, [=](){
+            commodityBox->hide();
+            //刷新一下表格
+            this->showCommodityList();
+            qDebug() << "return signal emitted!";
+        });
+        commodityBox->show();
+        qDebug() << "-----show!!!!!!";
+    });
+    connect(ui->tableWidget_2, &QTableWidget::cellDoubleClicked, [=](int row, int col){
+        if(col == 4) {
+            if(QMessageBox::information(this, "提醒", "确定封禁/激活该用户?", QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes) {
+                if(!this->auctionSystem->banUser(row)) {
+                    QMessageBox::warning(this, "错误", "什么鬼?!");
+                }
+                else QMessageBox::information(this, "提示", "用户状态修改成功!");
+                this->showUserList();//刷新
+            }
+        }
+    });
     this->showCommodityList();
     this->showOrderList();
     this->showUserList();
@@ -80,7 +106,7 @@ void AdminCenter::showOrderList()
 {
     orderList *ret = this->auctionSystem->getOrderList_a();
     if(ret->size == 0) {
-        QMessageBox::warning(this, "错误", "未找到您的订单!");
+        QMessageBox::warning(this, "错误", "未找到订单!");
     }
     else {
         ui->tableWidget_3->setRowCount(ret->size);
@@ -105,6 +131,10 @@ void AdminCenter::showOrderList()
 
 void AdminCenter::showAuctionRes(orderList *ret)
 {
+    if(ret->size == 0) {
+        QMessageBox::warning(this, "提醒", "当前没有任何竞拍信息哦");
+        return;
+    }
     ui->tableWidget_4->setRowCount(ret->size);
     for(int i = 0; i < ret->size; i++) {
         auto tab_order = new QTableWidgetItem(ret->list[i]->orderID);

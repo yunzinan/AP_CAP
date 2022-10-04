@@ -14,8 +14,9 @@ LoginScene::LoginScene(QWidget *parent)
 {
     ui->setupUi(this);
     this->setWindowTitle("登录界面");
-    this->setMinimumSize(400, 800);
+    this->setMinimumSize(700, 800);
     this->setWindowOpacity(0.95);
+    //按钮连接
     connect(ui->loginBtn_user, &QPushButton::clicked, [=](){
         qDebug() << "user loginBtn clicked!";
         this->userLogin();
@@ -37,6 +38,7 @@ LoginScene::LoginScene(QWidget *parent)
     connect(ui->exitBtn_regist, &QPushButton::clicked, [=](){
         this->close();
     });
+    //读入用户信息
     this->loadUserInfo();
     this->auctionSystem = new AuctionSystem(this->userInfoList, this->idx);
 }
@@ -157,6 +159,7 @@ void LoginScene::userRegister()
         cur->balance = 0.0;
         cur->userState = "active";
         this->userInfoList[this->idx++] = cur;
+        this->auctionSystem->userIdx++;
     }
 }
 
@@ -225,7 +228,7 @@ void LoginScene::adminLogin()
     if(adminID == "admin" && adminPwd == "root") {
         QMessageBox::about(this, "管理员登录", "登录成功!");
         qDebug() << "进入管理员中心";
-        AdminCenter *adminCenter = new AdminCenter(nullptr, this->auctionSystem);
+        AdminCenter *adminCenter = new AdminCenter(nullptr, this->auctionSystem);//这里传了
         adminCenter->show();
     }
     else {

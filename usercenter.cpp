@@ -12,10 +12,14 @@ UserCenter::UserCenter(QWidget *parent, userInfo *curUser, AuctionSystem *auctio
     ui->setupUi(this);
     this->setWindowTitle("用户界面");
     this->setMinimumSize(2000, 1500);
-    this->showUserInfo();
     this->auctionSystem = auctionSystem;
-    connect(ui->tabWidget, &QTabWidget::tabBarClicked, [=](){
-        if(ui->tabWidget->currentIndex() == 2) {
+    this->showUserInfo();
+//    this->showOrderList_b();
+//    this->showOrderList_s();
+//    this->searchCommodityList_b();
+//    this->searchCommodityList_s();
+    connect(ui->tabWidget, &QTabWidget::tabBarClicked, [=](int idx){
+        if(idx == 2) {
             this->showUserInfo();
             qDebug() << "刷新用户信息";
         }
@@ -39,6 +43,7 @@ UserCenter::UserCenter(QWidget *parent, userInfo *curUser, AuctionSystem *auctio
     connect(ui->pushButton_balance, &QPushButton::clicked, [=](){
         curUser->balance += QString::number(ui->lineEdit_balance->text().toFloat(), 'f', 1).toFloat();
         QMessageBox::information(this, "充值", "充值成功!");
+        this->showUserInfo();//刷新
     });
     connect(ui->searchBtn_b, &QPushButton::clicked, [=](){
         this->searchCommodityList_b();
@@ -46,21 +51,24 @@ UserCenter::UserCenter(QWidget *parent, userInfo *curUser, AuctionSystem *auctio
     connect(ui->searchBtn_s, &QPushButton::clicked, [=](){
         this->searchCommodityList_s();
     });
-    connect(ui->tabWidget_2, &QTabWidget::tabBarClicked, [=](){
-        if(ui->tabWidget_2->currentIndex() == 1) {
+    connect(ui->tabWidget_2, &QTabWidget::tabBarClicked, [=](int idx){
+        if(idx == 1) {
             this->showOrderList_b();
         }
     });
-    connect(ui->tabWidget_3, &QTabWidget::tabBarClicked, [=](){
-        if(ui->tabWidget_3->currentIndex() == 1) {
+    connect(ui->tabWidget_3, &QTabWidget::tabBarClicked, [=](int idx){
+        if(idx == 1) {
             this->showOrderList_s();
         }
     });
     connect(ui->pushButton_commodityAdd, &QPushButton::clicked, [=](){
         this->addCommodity();
     });
+    //卖家商品双击后弹出商品竞拍界面
     connect(ui->commodityTab_b, &QTableWidget::itemDoubleClicked, [=](QTableWidgetItem *item){
-       commodityInfo *selectedCommodity = this->auctionSystem->getCommodity(item->text());
+       int row = item->row();
+       QString text = this->ui->commodityTab_b->item(row, 0)->text();
+       commodityInfo *selectedCommodity = this->auctionSystem->getCommodity(text);
        this->bidScene = new MyMessageBox(nullptr, curUser, selectedCommodity, this->auctionSystem);
        connect(bidScene, &MyMessageBox::exitSignal, [=](){
            bidScene->hide();
@@ -72,9 +80,10 @@ UserCenter::UserCenter(QWidget *parent, userInfo *curUser, AuctionSystem *auctio
        qDebug() << "------show!!!!";
 //       this->hide();
     });
+    //卖家商品界面点击后弹出修改窗口
     connect(ui->commodityTab_s, &QTableWidget::cellDoubleClicked, [=](int row, int col){
         qDebug() << "row: " << row << "col: " << col;
-        this->commodityBox = new CommodityBox(nullptr, this->auctionSystem->getCommodity(ui->commodityTab_s->takeItem(row, 0)->text()));
+        this->commodityBox = new CommodityBox(nullptr, this->auctionSystem->getCommodity(ui->commodityTab_s->item(row, 0)->text()));
         connect(commodityBox, &CommodityBox::exitSignal, [=](){
             commodityBox->hide();
             //刷新一下表格
@@ -98,7 +107,7 @@ void UserCenter::showUserInfo()
     ui->lineEdit_userPwd->setText(curUser->password);
     ui->lineEdit_phoneNumber->setText(curUser->phonenumber);
     ui->lineEdit_address->setText(curUser->address);
-    ui->lineEdit_balance->setText(QString::number(curUser->balance, 'f', 1));
+    ui->label_balance->setText(QString::number(curUser->balance, 'f', 1));
 }
 
 void UserCenter::searchCommodityList_b()

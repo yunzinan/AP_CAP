@@ -1,6 +1,7 @@
 #include "commoditybox.h"
 #include "ui_commoditybox.h"
 #include <QMessageBox>
+#include <QRadioButton>
 
 CommodityBox::CommodityBox(QWidget *parent, commodityInfo* cur) :
     QWidget(parent),
@@ -29,7 +30,8 @@ void CommodityBox::modifyCommodity()
 {
     cur->commodityName = ui->lineEdit_name->text();
     cur->description = ui->lineEdit_description->text();
-    cur->state = ui->lineEdit_state->text();
+    if(ui->radio_onAuction->isChecked()) cur->state = "onAuction";
+    else cur->state = "removed";
     cur->number = ui->lineEdit_number->text().toInt();
     cur->floorPrice = ui->lineEdit_floorPrice->text().toFloat();
 }
@@ -37,7 +39,8 @@ void CommodityBox::modifyCommodity()
 void CommodityBox::showCommodity()
 {
     ui->lineEdit_name->setText(cur->commodityName);
-    ui->lineEdit_state->setText(cur->state);
+    if(cur->state == "onAuction") ui->radio_onAuction->setChecked(true);
+    else ui->radio_removed->setChecked(true);
     ui->lineEdit_number->setText(QString::number(cur->number));
     ui->lineEdit_floorPrice->setText(QString::number(cur->floorPrice, 'f', 1));
     ui->lineEdit_description->setText(cur->description);

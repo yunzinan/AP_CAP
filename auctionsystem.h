@@ -12,11 +12,11 @@ class AuctionSystem
     userInfo **userInfoList;
     int commodityIdx = 0;
     int orderIdx = 0;
-    int userIdx = 0;
     tm *ltm;
     myTimer *_myTimer;
     MyVector vector[COMMODITYCAPACITY];
 public:
+    int userIdx = 0;
     AuctionSystem(userInfo **userInfoList, int userIdx);
     void loadCommodityInfo();
     void loadOrderInfo();
@@ -38,6 +38,7 @@ public:
     userList* getUserList(const QString &username); //管理员功能
     orderList* calcResult();//核心功能
     int ID2int(const QString &str);
+    bool banUser(int idx);
 };
 
 #endif // AUCTIONSYSTEM_H

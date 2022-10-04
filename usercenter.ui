@@ -18,7 +18,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="BuyerCenter">
        <attribute name="title">
@@ -60,8 +60,17 @@
             </item>
             <item>
              <widget class="QTableWidget" name="commodityTab_b">
+              <property name="editTriggers">
+               <set>QAbstractItemView::NoEditTriggers</set>
+              </property>
+              <property name="alternatingRowColors">
+               <bool>true</bool>
+              </property>
               <property name="selectionBehavior">
                <enum>QAbstractItemView::SelectRows</enum>
+              </property>
+              <property name="sortingEnabled">
+               <bool>true</bool>
               </property>
               <column>
                <property name="text">
@@ -104,8 +113,17 @@
            <layout class="QVBoxLayout" name="verticalLayout_4">
             <item>
              <widget class="QTableWidget" name="orderTab_b">
+              <property name="editTriggers">
+               <set>QAbstractItemView::NoEditTriggers</set>
+              </property>
+              <property name="alternatingRowColors">
+               <bool>true</bool>
+              </property>
               <property name="selectionBehavior">
                <enum>QAbstractItemView::SelectRows</enum>
+              </property>
+              <property name="sortingEnabled">
+               <bool>true</bool>
               </property>
               <column>
                <property name="text">
@@ -158,7 +176,7 @@
         <item>
          <widget class="QTabWidget" name="tabWidget_3">
           <property name="currentIndex">
-           <number>2</number>
+           <number>0</number>
           </property>
           <widget class="QWidget" name="tab_6">
            <attribute name="title">
@@ -190,6 +208,9 @@
             </item>
             <item>
              <widget class="QTableWidget" name="commodityTab_s">
+              <property name="alternatingRowColors">
+               <bool>true</bool>
+              </property>
               <property name="selectionBehavior">
                <enum>QAbstractItemView::SelectRows</enum>
               </property>
@@ -234,6 +255,12 @@
            <layout class="QVBoxLayout" name="verticalLayout_7">
             <item>
              <widget class="QTableWidget" name="orderTab_s">
+              <property name="editTriggers">
+               <set>QAbstractItemView::NoEditTriggers</set>
+              </property>
+              <property name="alternatingRowColors">
+               <bool>true</bool>
+              </property>
               <property name="selectionBehavior">
                <enum>QAbstractItemView::SelectRows</enum>
               </property>
@@ -422,13 +449,6 @@
         <string>账号中心</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout">
-        <item row="4" column="2">
-         <widget class="QPushButton" name="pushButton_address">
-          <property name="text">
-           <string>修改</string>
-          </property>
-         </widget>
-        </item>
         <item row="2" column="0">
          <widget class="QLabel" name="label_4">
           <property name="text">
@@ -436,61 +456,20 @@
           </property>
          </widget>
         </item>
-        <item row="4" column="0">
-         <widget class="QLabel" name="label_6">
-          <property name="text">
-           <string> 地址:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QLabel" name="label_2">
-          <property name="text">
-           <string>用户名:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="2">
+        <item row="2" column="3">
          <widget class="QPushButton" name="pushButton_userPwd">
           <property name="text">
            <string>修改</string>
           </property>
          </widget>
         </item>
-        <item row="1" column="1">
-         <widget class="QLineEdit" name="lineEdit_username"/>
+        <item row="2" column="2">
+         <widget class="QLineEdit" name="lineEdit_userPwd"/>
         </item>
-        <item row="0" column="0">
-         <widget class="QLabel" name="label_3">
+        <item row="4" column="0">
+         <widget class="QLabel" name="label_6">
           <property name="text">
-           <string>用户ID: </string>
-          </property>
-         </widget>
-        </item>
-        <item row="5" column="1">
-         <widget class="QLineEdit" name="lineEdit_phoneNumber"/>
-        </item>
-        <item row="1" column="2">
-         <widget class="QPushButton" name="pushButton_username">
-          <property name="text">
-           <string> 修改</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="2">
-         <widget class="QPushButton" name="pushButton_balance">
-          <property name="text">
-           <string>充值</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="1">
-         <widget class="QLineEdit" name="lineEdit_balance"/>
-        </item>
-        <item row="5" column="2">
-         <widget class="QPushButton" name="pushButton_phoneNumber">
-          <property name="text">
-           <string>修改</string>
+           <string> 地址:</string>
           </property>
          </widget>
         </item>
@@ -501,9 +480,6 @@
           </property>
          </widget>
         </item>
-        <item row="4" column="1">
-         <widget class="QLineEdit" name="lineEdit_address"/>
-        </item>
         <item row="5" column="0">
          <widget class="QLabel" name="label_7">
           <property name="text">
@@ -511,11 +487,83 @@
           </property>
          </widget>
         </item>
-        <item row="2" column="1">
-         <widget class="QLineEdit" name="lineEdit_userPwd"/>
+        <item row="4" column="2">
+         <widget class="QLineEdit" name="lineEdit_address"/>
         </item>
-        <item row="0" column="1">
-         <widget class="QLineEdit" name="lineEdit_userID"/>
+        <item row="5" column="2">
+         <widget class="QLineEdit" name="lineEdit_phoneNumber"/>
+        </item>
+        <item row="1" column="3">
+         <widget class="QPushButton" name="pushButton_username">
+          <property name="text">
+           <string> 修改</string>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="3">
+         <widget class="QPushButton" name="pushButton_phoneNumber">
+          <property name="text">
+           <string>修改</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="2">
+         <widget class="QLineEdit" name="lineEdit_userID">
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="3">
+         <widget class="QPushButton" name="pushButton_address">
+          <property name="text">
+           <string>修改</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_2">
+          <property name="text">
+           <string>用户名:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="3">
+         <widget class="QPushButton" name="pushButton_balance">
+          <property name="text">
+           <string>充值</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_3">
+          <property name="text">
+           <string>用户ID: </string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="2">
+         <widget class="QLineEdit" name="lineEdit_username"/>
+        </item>
+        <item row="3" column="2">
+         <widget class="QWidget" name="widget_5" native="true">
+          <layout class="QHBoxLayout" name="horizontalLayout_4">
+           <item>
+            <widget class="QLabel" name="label_balance">
+             <property name="text">
+              <string>TextLabel</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLineEdit" name="lineEdit_balance">
+             <property name="placeholderText">
+              <string>请填写充值金额</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
         </item>
        </layout>
       </widget>
