@@ -135,7 +135,7 @@
               <item>
                <widget class="QLineEdit" name="lineEdit_userpwd">
                 <property name="echoMode">
-                 <enum>QLineEdit::PasswordEchoOnEdit</enum>
+                 <enum>QLineEdit::Password</enum>
                 </property>
                 <property name="cursorMoveStyle">
                  <enum>Qt::LogicalMoveStyle</enum>
@@ -282,6 +282,9 @@
            </item>
            <item row="2" column="2">
             <widget class="QLineEdit" name="lineEdit_registPwd">
+             <property name="echoMode">
+              <enum>QLineEdit::PasswordEchoOnEdit</enum>
+             </property>
              <property name="placeholderText">
               <string/>
              </property>
@@ -471,7 +474,11 @@
             </widget>
            </item>
            <item row="1" column="2">
-            <widget class="QLineEdit" name="lineEdit_adminPwd"/>
+            <widget class="QLineEdit" name="lineEdit_adminPwd">
+             <property name="echoMode">
+              <enum>QLineEdit::Password</enum>
+             </property>
+            </widget>
            </item>
            <item row="1" column="3">
             <spacer name="horizontalSpacer_17">

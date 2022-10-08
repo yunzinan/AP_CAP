@@ -39,6 +39,7 @@ private:
         while(*s && ((*s>='0' && *s<='9') || *s == '.'))s++;
         return !bool(*s);
     }
+    QString pwdEncrpt(QString &username);
 };
 
 #endif // USERCENTER_H

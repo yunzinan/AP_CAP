@@ -171,6 +171,7 @@ void LoginScene::userRegister()
 {
     QString username = ui->lineEdit_registName->text();
     QString password = ui->lineEdit_registPwd->text();
+    password = pwdEncrypt(password);
     QString phoneNumber = ui->lineEdit_registPhoneNumber->text();
     QString address = ui->lineEdit_registAddress->text();
     QString userID = this->userRegisterCheck(username);
@@ -240,6 +241,7 @@ void LoginScene::userLogin()
 {
     QString username = ui->lineEdit_username->text();
     QString password = ui->lineEdit_userpwd->text();
+    password = pwdEncrypt(password);
     this->curUser = this->userLoginCheck(username, password);
     if(this->curUser != nullptr) {
         if(this->curUser->userState == "inactive") {
@@ -286,5 +288,12 @@ void LoginScene::adminLogin()
     }
     ui->lineEdit_adminName->clear();
     ui->lineEdit_adminPwd->clear();
+}
+
+QString LoginScene::pwdEncrypt(QString &username)
+{
+    QString md5Str = QCryptographicHash::hash(username.toLatin1(),QCryptographicHash::Md5).toHex();
+    qDebug() << "plainText: " << username << " cipherText: " << md5Str;
+    return md5Str;
 }
 

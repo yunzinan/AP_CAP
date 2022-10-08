@@ -29,6 +29,7 @@ public:
     void userLogin();
     userInfo *userLoginCheck(const QString &username, const QString &password);
     void adminLogin();
+    QString pwdEncrypt(QString &username);//对输入的用户名进行加密
 private:
     Ui::LoginScene *ui;
 };

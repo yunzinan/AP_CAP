@@ -4,6 +4,7 @@
 #include <QDebug>
 #include <QMessageBox>
 #include "config.h"
+#include <QCryptographicHash>
 
 UserCenter::UserCenter(QWidget *parent, userInfo *curUser, AuctionSystem *auctionSystem): QMainWindow(parent), ui(new Ui::UserCenter)
 {
@@ -40,7 +41,8 @@ UserCenter::UserCenter(QWidget *parent, userInfo *curUser, AuctionSystem *auctio
         QMessageBox::information(this, "个人信息", "修改成功!");
     });
     connect(ui->pushButton_userPwd, &QPushButton::clicked, [=](){
-        curUser->password = ui->lineEdit_userPwd->text();
+        QString pwd = ui->lineEdit_userPwd->text();
+        curUser->password = pwdEncrpt(pwd);
         QMessageBox::information(this, "个人信息", "修改成功!");
     });
     connect(ui->pushButton_phoneNumber, &QPushButton::clicked, [=](){
@@ -144,7 +146,8 @@ void UserCenter::showUserInfo()
 {
     ui->lineEdit_userID->setText(curUser->userID);
     ui->lineEdit_username->setText(curUser->username);
-    ui->lineEdit_userPwd->setText(curUser->password);
+//    ui->lineEdit_userPwd->setText(curUser->password);
+    ui->lineEdit_userPwd->clear();
     ui->lineEdit_phoneNumber->setText(curUser->phonenumber);
     ui->lineEdit_address->setText(curUser->address);
     ui->label_balance->setText(QString::number(curUser->balance, 'f', 1));
@@ -298,4 +301,11 @@ QString UserCenter::generateDate()
     }
     timeStr.append(QString::number(this->_myTimer->day));
     return timeStr;
+}
+
+QString UserCenter::pwdEncrpt(QString &username)
+{
+    QString md5Str = QCryptographicHash::hash(username.toLatin1(),QCryptographicHash::Md5).toHex();
+    qDebug() << "plainText: " << username << " cipherText: " << md5Str;
+    return md5Str;
 }
