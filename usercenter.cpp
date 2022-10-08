@@ -18,6 +18,17 @@ UserCenter::UserCenter(QWidget *parent, userInfo *curUser, AuctionSystem *auctio
 //    this->showOrderList_s();
 //    this->searchCommodityList_b();
 //    this->searchCommodityList_s();
+    ui->lineEdit_number->setValidator(new QRegExpValidator(QRegExp("^[0-9]+$"), this));
+    ui->lineEdit_address->setValidator(new QRegExpValidator(QRegExp("^[a-zA-Z0-9]{1,40}$"), this));
+    ui->lineEdit_balance->setValidator(new QRegExpValidator(QRegExp("^[0-9]+[\.]?[0-9]?$"), this));
+    ui->lineEdit_username->setValidator(new QRegExpValidator(QRegExp("^[a-zA-Z0-9]{1,10}$"), this));
+    ui->lineEdit_userPwd->setValidator(new QRegExpValidator(QRegExp("^[a-z0-9]{1,20}$"), this));
+    ui->lineEdit_floorPrice->setValidator(new QRegExpValidator(QRegExp("^[0-9]+[\.]?[0-9]?$"), this));
+    ui->lineEdit_Description->setValidator(new QRegExpValidator(QRegExp("^[a-zA-Z0-9]{1,200}$"), this));
+    ui->lineEdit_phoneNumber->setValidator(new QRegExpValidator(QRegExp("^[0-9]{1,20}$"), this));
+    ui->lineEdit_commodityName->setValidator(new QRegExpValidator(QRegExp("^[a-zA-Z0-9]{1,20}$"), this));
+    ui->lineEdit_commoditySearch_b->setValidator(new QRegExpValidator(QRegExp("^[a-zA-Z0-9]*$"), this));
+    ui->lineEdit_commoditySearch_s->setValidator(new QRegExpValidator(QRegExp("^[a-zA-Z0-9]*$"), this));
     connect(ui->tabWidget, &QTabWidget::tabBarClicked, [=](int idx){
         if(idx == 2) {
             this->showUserInfo();

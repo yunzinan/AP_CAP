@@ -7,6 +7,8 @@
 #include <QTextStream>
 #include <QDir>
 #include <QMessageBox>
+#include <QRegExpValidator>
+#include <QCryptographicHash>
 
 LoginScene::LoginScene(QWidget *parent)
     : QMainWindow(parent)
@@ -38,6 +40,15 @@ LoginScene::LoginScene(QWidget *parent)
     connect(ui->exitBtn_regist, &QPushButton::clicked, [=](){
         this->close();
     });
+    QRegExp regex("^[0-9a-z]{1,20}$");
+    ui->lineEdit_userpwd->setValidator(new QRegExpValidator(regex, this));
+    ui->lineEdit_registPwd->setValidator(new QRegExpValidator(regex, this));
+    ui->lineEdit_username->setValidator(new QRegExpValidator(QRegExp("^[a-zA-Z0-9]{1,10}$"), this));
+    ui->lineEdit_registName->setValidator(new QRegExpValidator(QRegExp("^[a-zA-Z0-9]{1,10}$"), this));
+    ui->lineEdit_registPhoneNumber->setValidator(new QRegExpValidator(QRegExp("^[0-9]{1,20}$"), this));
+    ui->lineEdit_registAddress->setValidator(new QRegExpValidator(QRegExp("^[a-zA-Z0-9]{1,40}$"), this));
+    ui->lineEdit_adminPwd->setValidator(new QRegExpValidator(regex, this));
+    ui->lineEdit_adminName->setValidator(new QRegExpValidator(QRegExp("^[a-zA-Z0-9]{1,10}$"), this));
     connect(ui->lineEdit_registName, &QLineEdit::editingFinished, [=](){
         QString text = ui->lineEdit_registName->text();
         if(this->auctionSystem->UserNameCheck(text)) {

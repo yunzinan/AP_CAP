@@ -3,7 +3,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <QDebug>
-
+#include <QRegExp>
 AuctionSystem::AuctionSystem(userInfo **userInfoList, int userIdx)
 {
     this->userIdx = userIdx;
@@ -181,9 +181,23 @@ commodityList *AuctionSystem::getCommodity_b(const QString &commodityName)
         }
     }
     else {
-        for(int i = 0; i < this->commodityIdx; i++) {
-            if(this->commodityInfoList[i]->commodityName == commodityName && this->commodityInfoList[i]->state == "onAuction") {
-                ret->list[ret->size++] = commodityInfoList[i];
+        QRegExp regex(commodityName);
+        QRegExp idxReg("^M[0-9]{3}$");
+        if(idxReg.exactMatch(commodityName)) {//说明输入的是商品ID
+            for(int i = 0; i < this->commodityIdx; i++) {
+                if(this->commodityInfoList[i]->commodityID == commodityName && this->commodityInfoList[i]->state == "onAuction") {
+                    ret->list[ret->size++] = commodityInfoList[i];
+                }
+            }
+        }
+        else {//否则匹配商品名
+            for(int i = 0; i < this->commodityIdx; i++) {
+                if(regex.indexIn(this->commodityInfoList[i]->commodityName)!= -1 && this->commodityInfoList[i]->state == "onAuction") {
+                    ret->list[ret->size++] = commodityInfoList[i];
+                }
+                else {
+                    qDebug() << regex.exactMatch(this->commodityInfoList[i]->commodityName);
+                }
             }
         }
     }
@@ -203,9 +217,20 @@ commodityList *AuctionSystem::getCommodity_s(const QString &commodityName, const
         }
     }
     else {
-        for(int i = 0; i < this->commodityIdx; i++) {
-            if(this->commodityInfoList[i]->commodityName == commodityName && this->commodityInfoList[i]->sellerID == sellerID) {
-                ret->list[ret->size++] = commodityInfoList[i];
+        QRegExp regex(commodityName);
+        QRegExp idxReg("^M[0-9]{3}$");
+        if(idxReg.exactMatch(commodityName)) {//匹配商品ID
+            for(int i = 0; i < this->commodityIdx; i++) {
+                if(this->commodityInfoList[i]->commodityID == commodityName && this->commodityInfoList[i]->sellerID == sellerID) {
+                    ret->list[ret->size++] = commodityInfoList[i];
+                }
+            }
+        }
+        else {
+            for(int i = 0; i < this->commodityIdx; i++) {
+                if(regex.indexIn(this->commodityInfoList[i]->commodityName)!= -1 && this->commodityInfoList[i]->sellerID == sellerID) {
+                    ret->list[ret->size++] = commodityInfoList[i];
+                }
             }
         }
     }
@@ -220,16 +245,26 @@ commodityList *AuctionSystem::getCommodity_a(const QString &commodityName)
         for(int i = 0; i < this->commodityIdx; i++) {
             ret->list[ret->size++] = commodityInfoList[i];
         }
-        return ret;
     }
     else {
-        for(int i = 0; i < commodityIdx; i++) {
-            if(this->commodityInfoList[i]->commodityName == commodityName) {
-                ret->list[ret->size++] = commodityInfoList[i];
+        QRegExp regex(commodityName);
+        QRegExp idxReg("^M[0-9]{3}$");
+        if(idxReg.exactMatch(commodityName)) {//匹配商品ID
+            for(int i = 0; i < this->commodityIdx; i++) {
+                if(this->commodityInfoList[i]->commodityID == commodityName) {
+                    ret->list[ret->size++] = commodityInfoList[i];
+                }
             }
         }
-        return ret;
+        else {
+            for(int i = 0; i < this->commodityIdx; i++) {
+                if(regex.indexIn(this->commodityInfoList[i]->commodityName)!= -1) {
+                    ret->list[ret->size++] = commodityInfoList[i];
+                }
+            }
+        }
     }
+    return ret;
 }
 
 orderList *AuctionSystem::getOrderList_b(const QString &buyerID)
@@ -395,9 +430,20 @@ userList *AuctionSystem::getUserList(const QString &username)
         }
     }
     else {
-        for(int i = 0; i < this->userIdx; i++) {
-            if(this->userInfoList[i]->username == username) {
-                ret->list[ret->size++] = this->userInfoList[i];
+        QRegExp regex(username);
+        QRegExp idxReg("^U[0-9]{3}$");
+        if(idxReg.exactMatch(username)) {//说明输入的是ID
+            for(int i = 0; i < this->userIdx; i++) {
+                if(this->userInfoList[i]->userID == username) {
+                    ret->list[ret->size++] = this->userInfoList[i];
+                }
+            }
+        }
+        else {
+            for(int i = 0; i < this->userIdx; i++) {
+                if(regex.indexIn(this->userInfoList[i]->username) != -1) {
+                    ret->list[ret->size++] = this->userInfoList[i];
+                }
             }
         }
     }

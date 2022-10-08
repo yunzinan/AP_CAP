@@ -11,6 +11,7 @@ MyMessageBox::MyMessageBox(QWidget *parent, userInfo *curUser, commodityInfo *cu
     setWindowTitle("竞拍界面");
     setMinimumSize(600, 800);
     this->showCommodityInfo();
+    ui->lineEdit->setValidator(new QRegExpValidator(QRegExp("^[0-9]+[\.]?[0-9]?$"), this));
     connect(ui->pushButton, &QPushButton::clicked, [=](){
         qDebug() << "确认购买";
         this->purchase();

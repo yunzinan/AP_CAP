@@ -31,7 +31,7 @@
            <item>
             <widget class="QLabel" name="label">
              <property name="text">
-              <string> 请输入商品名称: </string>
+              <string> 请输入商品名称/ID: </string>
              </property>
             </widget>
            </item>
@@ -95,7 +95,7 @@
            <item>
             <widget class="QLabel" name="label_2">
              <property name="text">
-              <string> 请输入用户名称: </string>
+              <string> 请输入用户名称/ID: </string>
              </property>
             </widget>
            </item>

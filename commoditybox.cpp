@@ -2,6 +2,7 @@
 #include "ui_commoditybox.h"
 #include <QMessageBox>
 #include <QRadioButton>
+#include <QRegExpValidator>
 
 CommodityBox::CommodityBox(QWidget *parent, commodityInfo* cur) :
     QWidget(parent),
@@ -10,6 +11,10 @@ CommodityBox::CommodityBox(QWidget *parent, commodityInfo* cur) :
     ui->setupUi(this);
     setWindowTitle("修改商品属性");
     this->cur = cur;
+    ui->lineEdit_name->setValidator(new QRegExpValidator(QRegExp("^[a-zA-Z0-9]{1,20}$"), this));
+    ui->lineEdit_number->setValidator(new QRegExpValidator(QRegExp("^[0-9]+$"), this));
+    ui->lineEdit_floorPrice->setValidator(new QRegExpValidator(QRegExp("^[0-9]+[\.]?[0-9]?$"), this));
+    ui->lineEdit_description->setValidator(new QRegExpValidator(QRegExp("^[a-zA-Z0-9]{1,200}$"), this));
     connect(ui->confirmBtn, &QPushButton::clicked, [=](){
         if(QMessageBox::information(this, "提醒", "确认修改?", QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes) {
             this->modifyCommodity();

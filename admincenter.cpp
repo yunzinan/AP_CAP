@@ -1,6 +1,7 @@
 #include "admincenter.h"
 #include "ui_admincenter.h"
 #include <QMessageBox>
+#include <QRegExpValidator>
 
 AdminCenter::AdminCenter(QWidget *parent, AuctionSystem *auctionSystem) :
     QMainWindow(parent),
@@ -10,6 +11,8 @@ AdminCenter::AdminCenter(QWidget *parent, AuctionSystem *auctionSystem) :
     setWindowTitle("管理员界面");
     setMinimumSize(2000, 1500);
     this->auctionSystem = auctionSystem;
+    ui->lineEdit_user->setValidator(new QRegExpValidator(QRegExp("^[a-zA-Z0-9]{1,10}$"), this));
+    ui->lineEdit_commodity->setValidator(new QRegExpValidator(QRegExp("^[a-zA-Z0-9]{1,20}$"), this));
     connect(ui->pushButton_commodity, &QPushButton::clicked, [=](){
         this->showCommodityList();
     });
