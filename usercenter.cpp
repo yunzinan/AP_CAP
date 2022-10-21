@@ -56,6 +56,7 @@ UserCenter::UserCenter(QWidget *parent, userInfo *curUser, AuctionSystem *auctio
     connect(ui->pushButton_balance, &QPushButton::clicked, [=](){
         curUser->balance += QString::number(ui->lineEdit_balance->text().toFloat(), 'f', 1).toFloat();
         QMessageBox::information(this, "充值", "充值成功!");
+        ui->lineEdit_balance->clear();
         this->showUserInfo();//刷新
     });
     connect(ui->searchBtn_b, &QPushButton::clicked, [=](){
