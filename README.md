@@ -1,5 +1,7 @@
 # Commodity Auction System - Documentation
 
+🤩[upd]click [here](https://ap-cap.vercel.app/) to have an instant preview! 
+
 # 商品竞拍平台-用户手册
 
 ## 用户功能
